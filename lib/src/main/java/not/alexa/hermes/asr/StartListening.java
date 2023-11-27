@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2023 Not Alexa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package not.alexa.hermes.asr;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import not.alexa.hermes.HermesMessage;
+
+public class StartListening implements HermesMessage<StartListening> {
+	@JsonProperty(defaultValue = "default") String siteId;
+	@JsonProperty String sessionId;
+	@JsonProperty(defaultValue = "true") boolean stopOnSilence;
+	@JsonProperty(defaultValue = "false") boolean sendAudioCaptured;
+	@JsonProperty String wakewordId;
+	
+	public StartListening() {
+		this("default",true,false);
+	}
+	
+	@JsonCreator
+	public StartListening(@JsonProperty("siteId") String siteId,@JsonProperty("stopOnSilence") boolean stopOnSilence,@JsonProperty("sendAudioCaptured") boolean sendAudioCaptured) {
+		this(siteId,null,stopOnSilence,sendAudioCaptured,null);
+	}
+	
+	public StartListening(String siteId, String sessionId, boolean stopOnSilence, boolean sendAudioCaptured,
+			String wakewordId) {
+		super();
+		this.siteId = siteId;
+		this.sessionId = sessionId;
+		this.stopOnSilence = stopOnSilence;
+		this.sendAudioCaptured = sendAudioCaptured;
+		this.wakewordId = wakewordId;
+	}
+
+	@Override
+	public String getTopic() {
+		return "hermes/asr/startListening";
+	}
+
+	public String getSiteId() {
+		return siteId;
+	}
+
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public boolean isStopOnSilence() {
+		return stopOnSilence;
+	}
+
+	public boolean isSendAudioCaptured() {
+		return sendAudioCaptured;
+	}
+
+	public String getWakewordId() {
+		return wakewordId;
+	}
+}

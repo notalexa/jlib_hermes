@@ -1,0 +1,33 @@
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+allprojects {
+	apply plugin: 'java-library'
+	apply plugin: 'maven-publish'
+	repositories {
+	    mavenCentral()
+	    maven {
+	      url 'file://'+System.getProperty('user.home')+'/maven-repo'
+	    }    
+	}
+	dependencies {
+	    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    	testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.36'
+	}
+	task sourcesJar(type: Jar, dependsOn: classes) {
+    	classifier = 'sources'
+    	from sourceSets.main.allSource
+	}
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+    	classifier = 'javadoc'
+    	from javadoc.destinationDir
+	}
+	tasks.named('test') {
+	    // Use JUnit Platform for unit tests.
+	    useJUnitPlatform()
+	}
+}
+

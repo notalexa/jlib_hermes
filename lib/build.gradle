@@ -1,0 +1,28 @@
+
+dependencies {
+	implementation group: 'not.alexa', name: 'jlib-netobjects', version: '0.9.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.14.2'
+	implementation group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.5'
+	
+    testImplementation 'org.mockito:mockito-core:5.3.1'
+	testImplementation group: 'not.alexa', name: 'jlib-netobjects-jackson', version: '0.9.1'
+}
+
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'jlib-hermes'
+            groupId = 'not.alexa'
+            version = '0.9.1'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+    repositories {
+        maven {
+        	// Local only
+        	url 'file://'+System.getProperty('user.home')+'/maven-repo'
+        }
+    }
+}
