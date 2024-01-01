@@ -25,7 +25,7 @@ public class AudioSessionFrame extends Binary<AudioSessionFrame> implements Herm
 	protected String siteId;
 	protected String sessionId;
 	
-	AudioSessionFrame() {
+	protected AudioSessionFrame() {
 		super(null);
 	}
 	

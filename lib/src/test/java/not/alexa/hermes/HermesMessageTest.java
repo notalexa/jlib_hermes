@@ -58,7 +58,7 @@ import not.alexa.hermes.hotword.Hotwords.Model;
 import not.alexa.hermes.hotword.HotwordsRequest;
 import not.alexa.hermes.intent.handling.ToggleOff;
 import not.alexa.hermes.intent.handling.ToggleOn;
-import not.alexa.hermes.nlu.Answer;
+import not.alexa.hermes.nlu.NLUIntent;
 import not.alexa.hermes.nlu.NLUError;
 import not.alexa.hermes.nlu.Query;
 import not.alexa.hermes.tts.Say;
@@ -488,7 +488,7 @@ public class HermesMessageTest {
 					assertNull(msg.getId());
 					assertEquals("hermes/nlu/intentNotRecognized", msg.getTopic());
 				}),
-				new TestData<Answer>(Query.createBuilder("input words")
+				new TestData<NLUIntent>(Query.createBuilder("input words")
 						.addInitialSlot(new Slot("slotName","v"))
 						.addInitialSlot(new Slot("slotName2","value"))
 						.addInitialSlot(new Slot("slotName","value"))
@@ -525,7 +525,7 @@ public class HermesMessageTest {
 					assertEquals(2,msg.getSlots()[2].getRange().getEnd());
 					assertEquals("hermes/intent/intent", msg.getTopic());
 				}),
-				new TestData<Answer>(Query.createBuilder("input words")
+				new TestData<NLUIntent>(Query.createBuilder("input words")
 						.setId(null)
 						.setSiteId("default")
 						.setSessionId("sessionId")

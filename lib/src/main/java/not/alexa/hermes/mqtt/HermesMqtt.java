@@ -9,6 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import not.alexa.hermes.HermesApi;
+import not.alexa.hermes.HermesComponent;
 import not.alexa.hermes.HermesMessage;
 import not.alexa.netobjects.BaseException;
 import not.alexa.netobjects.Context;
@@ -23,12 +24,12 @@ import not.alexa.netobjects.Context;
 public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 	private MqttClient client;
 	
-	public HermesMqtt(Context context) {
-		super(context);
+	public HermesMqtt(Context context,HermesComponent...components) {
+		super(context,components);
 	}
 	
-	public HermesMqtt(Context context,String siteId) {
-		super(context,siteId);
+	public HermesMqtt(Context context,String siteId,HermesComponent...components) {
+		super(context,siteId,components);
 	}
 	
 	/**

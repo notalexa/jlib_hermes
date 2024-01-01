@@ -27,7 +27,7 @@ public class SessionStarted implements HermesMessage<SessionStarted> {
 	protected SessionStarted() {
 	}
 	
-	SessionStarted(String sessionId,String siteId,String customData) {
+	public SessionStarted(String sessionId,String siteId,String customData) {
 		this.sessionId=sessionId;
 		this.siteId=siteId;
 		this.customData=customData;

@@ -42,7 +42,7 @@ public class Query implements HermesMessage<Query>, HermesRequest {
 		return new Builder().setInput(input);
 	}
 	
-	Query() {
+	protected Query() {
 	}
 
 	@Override
@@ -85,8 +85,8 @@ public class Query implements HermesMessage<Query>, HermesRequest {
 		return alternatives==null?NO_ALTERNATIVES:alternatives;
 	}
 	
-	public Answer.Builder createAnswer() {
-		return Answer.createBuilder(input)
+	public NLUIntent.Builder createAnswer() {
+		return NLUIntent.createBuilder(input)
 				.addSlots(initialSlots)
 				.setId(id)
 				.setSessionId(sessionId)

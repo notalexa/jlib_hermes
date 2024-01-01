@@ -26,10 +26,9 @@ public class SayFinished implements HermesMessage<SayFinished> {
 	protected SayFinished() {
 	}
 	
-	SayFinished(String siteId,String id) {
+	public SayFinished(String siteId,String id) {
 		this.siteId=siteId;
 		this.id=id;
-		
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class IntentNotRecognized implements HermesMessage<IntentNotRecognized> {
 	protected IntentNotRecognized() {
 	}
 
-	IntentNotRecognized(String input,String id,String siteId,String sessionId) {
+	public IntentNotRecognized(String input,String id,String siteId,String sessionId) {
 		this.input=input;
 		this.id=id;
 		this.siteId=siteId;

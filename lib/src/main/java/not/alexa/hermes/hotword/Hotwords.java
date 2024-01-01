@@ -28,7 +28,7 @@ public class Hotwords implements HermesMessage<Hotwords>, RequestAnswer {
 	protected Hotwords() {
 	}
 	
-	Hotwords(Model[] models,String siteId,String id) {
+	public Hotwords(Model[] models,String siteId,String id) {
 		this.models=models;
 		this.siteId=siteId;
 		this.id=id;

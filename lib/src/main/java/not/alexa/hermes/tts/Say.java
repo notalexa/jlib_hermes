@@ -17,6 +17,7 @@ package not.alexa.hermes.tts;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import not.alexa.hermes.HermesApi;
 import not.alexa.hermes.HermesMessage;
 
 public class Say implements HermesMessage<Say> {
@@ -32,9 +33,13 @@ public class Say implements HermesMessage<Say> {
 	}
 	
 	public Say(String text) {
-		this(text,null,null,-1f,"default",null,null);
+		this("default",text);
 	}
-	
+
+	public Say(String siteId,String text) {
+		this(text,null,HermesApi.createId(),-1f,siteId,null,null);
+	}
+
 	public Say(String text,String lang,String id,float volume,String siteId,String sessionId,String voiceId) {
 		this.text=text;
 		this.lang=lang;

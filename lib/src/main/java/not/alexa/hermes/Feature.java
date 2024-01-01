@@ -106,6 +106,10 @@ public enum Feature {
 	},new Entry[] {
 		new Entry("hermes/nlu/query",Query.class),
 	}),
+	Reply(new Entry[] {
+			new Entry("rhasspy/handle/reply",not.alexa.hermes.nlu.Reply.class),
+		},new Entry[] {
+		}),
 	NLUTrain(new Entry[] {
 		new Entry("rhasspy/nlu/<siteId>/trainSuccess",null),
 		new Entry("hermes/error/nlu",NLUError.class),

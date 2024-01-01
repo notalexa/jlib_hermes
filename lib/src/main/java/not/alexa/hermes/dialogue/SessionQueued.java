@@ -27,7 +27,7 @@ public class SessionQueued implements HermesMessage<SessionQueued> {
 	protected SessionQueued() {
 	}
 	
-	SessionQueued(String sessionId,String siteId,String customData) {
+	public SessionQueued(String sessionId,String siteId,String customData) {
 		this.sessionId=sessionId;
 		this.siteId=siteId;
 		this.customData=customData;

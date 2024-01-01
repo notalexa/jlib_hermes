@@ -24,7 +24,7 @@ import not.alexa.netobjects.api.ResolvableBy;
 public class AudioFrame extends Binary<AudioFrame> implements HermesMessage<AudioFrame> {
 	protected String siteId;
 	
-	AudioFrame() {
+	protected AudioFrame() {
 		super(null);
 	}
 	

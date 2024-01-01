@@ -13,16 +13,20 @@ allprojects {
 	      url 'file://'+System.getProperty('user.home')+'/maven-repo'
 	    }    
 	}
+	java {
+	    sourceCompatibility = 1.8
+	    targetCompatibility = 1.8
+	}
 	dependencies {
 	    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     	testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.36'
 	}
 	task sourcesJar(type: Jar, dependsOn: classes) {
-    	classifier = 'sources'
+    	archiveClassifier = 'sources'
     	from sourceSets.main.allSource
 	}
 	task javadocJar(type: Jar, dependsOn: javadoc) {
-    	classifier = 'javadoc'
+    	archiveClassifier = 'javadoc'
     	from javadoc.destinationDir
 	}
 	tasks.named('test') {

@@ -22,12 +22,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import not.alexa.hermes.HermesApi;
 import not.alexa.hermes.HermesMessage;
+import not.alexa.hermes.tts.Say;
+import not.alexa.netobjects.BaseException;
 import not.alexa.hermes.HermesApi.AsrToken;
 import not.alexa.hermes.HermesApi.Intent;
 import not.alexa.hermes.HermesApi.RequestAnswer;
 import not.alexa.hermes.HermesApi.Slot;
 
-public class Answer implements HermesMessage<Answer>, RequestAnswer {
+public class NLUIntent implements HermesMessage<NLUIntent>, RequestAnswer {
 
 	@JsonProperty(required = true) protected String input;
 	@JsonProperty(required = true) protected Intent intent;
@@ -44,7 +46,7 @@ public class Answer implements HermesMessage<Answer>, RequestAnswer {
 		return new Builder().setInput(input);
 	}
 	
-	Answer() {
+	protected NLUIntent() {
 	}
 
 	@Override
@@ -54,6 +56,19 @@ public class Answer implements HermesMessage<Answer>, RequestAnswer {
 	
 	public float getConfidenceScore() {
 		return intent.getConfidenceScore();
+	}
+	
+	public String getIntent() {
+		return intent.getIntentName();
+	}
+	
+	public Slot getSlot(String name) {
+		for(Slot slot:slots) {
+			if(name.equals(slot.getEntity())) {
+				return slot;
+			}
+		}
+		return null;
 	}
 
 	public String getInput() {
@@ -88,10 +103,18 @@ public class Answer implements HermesMessage<Answer>, RequestAnswer {
 	public float getAsrConfidence() {
 		return asrConfidence;
 	}
-
+	
+	public void reply(HermesApi api,String text) throws BaseException {
+		Slot replyTo=getSlot("reply-to");
+		if(replyTo!=null) {
+			new Reply(api.getSiteId(),replyTo.getValue(),text).publish(api);
+		} else {
+			new Say(api.getSiteId(),text).publish(api);
+		}
+	}
 	
 	public static class Builder {
-		Answer answer=new Answer();
+		NLUIntent answer=new NLUIntent();
 		{
 			answer.id="";
 			answer.siteId="default";
@@ -158,11 +181,11 @@ public class Answer implements HermesMessage<Answer>, RequestAnswer {
 			return this;
 		}
 
-		public Answer build() {
+		public NLUIntent build() {
 			answer.slots=slots.toArray(HermesApi.NO_SLOTS);
-			Answer result=answer;
+			NLUIntent result=answer;
 			try {
-				answer=(Answer)answer.clone();
+				answer=(NLUIntent)answer.clone();
 			} catch(Throwable t) {
 			}
 			return result;

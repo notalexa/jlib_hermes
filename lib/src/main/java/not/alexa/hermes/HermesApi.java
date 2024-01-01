@@ -1,9 +1,26 @@
+/*
+ * Copyright (C) 2023 Not Alexa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package not.alexa.hermes;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -37,25 +54,11 @@ import not.alexa.hermes.hotword.HotwordsRequest;
 import not.alexa.hermes.intent.handling.ToggleOff;
 import not.alexa.hermes.intent.handling.ToggleOn;
 import not.alexa.hermes.mqtt.HermesMqtt;
-import not.alexa.hermes.nlu.Answer;
+import not.alexa.hermes.nlu.NLUIntent;
 import not.alexa.hermes.nlu.IntentNotRecognized;
 import not.alexa.hermes.nlu.NLUError;
-/*
- * Copyright (C) 2023 Not Alexa
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import not.alexa.hermes.nlu.Query;
+import not.alexa.hermes.nlu.Reply;
 import not.alexa.hermes.nlu.Train;
 import not.alexa.hermes.nlu.TrainSuccess;
 import not.alexa.hermes.tts.Say;
@@ -107,31 +110,61 @@ public class HermesApi {
 	private Map<String,PendingAnswer<?>> pendingAnswers=new HashMap<>();
 	private Set<Class<?>> loadedClasses=new HashSet<>();
 	private Map<Class<? extends HermesMessage<?>>,Binary<?>> binaryPrototypes=new HashMap<>();
-	
+	private HermesComponent[] loadedComponents;
 	/**
 	 * Create a context without a site id (typically a client).
 	 * 
-	 * @param context the context to use
+	 * @param parent the base context to use
+	 * @param components the hermes components to use to handle messages
 	 */
-	public HermesApi(Context context) {
-		this(context,null);
+	public HermesApi(Context parent,HermesComponent...components) {
+		this(parent,null,components);
 	}
 
 	/**
 	 * Create a context with a site id (typically a server).
 	 * 
-	 * @param context the context to use
+	 * @param parent the context to use
 	 * @param siteId the site id of this instance
+	 * @param components the components to use to handle messages
 	 */
-	public HermesApi(Context context,String siteId) {
-		this.context=context;
+	public HermesApi(Context parent,String siteId,HermesComponent...components) {
+		context=makeContext(parent,components);
 		this.siteId=siteId;
 		context.putAdapter(HermesApi.class, this);
-		init(context);
+		init(context,components);
 	}
 	
-	static String createId() {
+	/**
+	 * 
+	 * @return a unique id
+	 */
+	public static String createId() {
 		return UUID.randomUUID().toString();
+	}
+	
+	private static Context makeContext(Context parent,HermesComponent...components) {
+		if(components.length>0) {
+			Map<Class<?>,Object> resources=new HashMap<>();
+			List<Class<? extends HermesMessage<?>>> overlays=new ArrayList<>();
+			for(HermesComponent component:components) {
+				component.configure(resources, overlays);
+			}
+			TypeLoader loader=parent.getTypeLoader().overlay(overlays.toArray(new Class[0]));
+			Context context=new Context.Default(parent) {
+
+				@Override
+				public TypeLoader getTypeLoader() {
+					return loader;
+				}
+			};
+			for(Map.Entry<Class<?>,Object> entry:resources.entrySet()) {
+				context.putAdapter(entry.getKey(),entry.getValue());
+			}
+			return context;
+		} else {
+			return parent;
+		}
 	}
 	
 	/**
@@ -141,8 +174,18 @@ public class HermesApi {
 	public String getSiteId() {
 		return siteId;
 	}
+
+	/**
+	 * 
+	 * @return the context of this api
+	 */
+	public Context getContext() {
+		return context;
+	}
+
 	
-	protected void init(Context context) {
+	protected void init(Context context,HermesComponent[] components) {
+		loadedComponents=components;
 		Set<Feature> features=new HashSet<>();
 		Set<String> topics=new HashSet<>();
 		TypeLoader loader=context.getTypeLoader();
@@ -182,7 +225,7 @@ public class HermesApi {
 		if(siteId!=null&&loader.hasOverlays(Query.class)) {
 			features.add(Feature.NLU.initServer(siteId,topics, classMap));
 		}
-		if(loader.hasOverlays(Answer.class)||loader.hasOverlays(IntentNotRecognized.class)) {
+		if(loader.hasOverlays(NLUIntent.class)||loader.hasOverlays(IntentNotRecognized.class)) {
 			Feature.NLU.initClient(siteId,topics, classMap);
 		}
 		if(siteId!=null&&loader.hasOverlays(Train.class)) {
@@ -193,6 +236,9 @@ public class HermesApi {
 		}
 		if(siteId!=null&&loader.hasOverlays(not.alexa.hermes.asr.ToggleOn.class)&&loader.hasOverlays(not.alexa.hermes.asr.ToggleOff.class)) {
 			features.add(Feature.ASR.initServer(siteId,topics, classMap));
+		}
+		if(loader.hasOverlays(Reply.class)) {
+			Feature.Reply.initClient(siteId,topics, classMap);
 		}
 		if(loader.hasOverlays(TextCaptured.class)||loader.hasOverlays(AudioCaptured.class)) {
 			Feature.ASR.initClient(siteId,topics, classMap);
@@ -222,6 +268,9 @@ public class HermesApi {
 		this.features=features.toArray(new Feature[features.size()]);
 		this.topics=topics.toArray(new String[topics.size()]);
 		this.loadedClasses.addAll(classMap.values());
+		for(HermesComponent component:components) {
+			component.startup(context);
+		}
 	}
 	
 	protected void received(String topic,byte[] data) throws BaseException, IllegalTopicException {
@@ -229,7 +278,7 @@ public class HermesApi {
 		HermesMessage<?> msg=null;
 		if(hermesClass==null) {
 			if(topic.startsWith("hermes/intent/")) {
-				hermesClass=Answer.class;
+				hermesClass=NLUIntent.class;
 			} else if(topic.startsWith("hermes/hotword/")&&topic.endsWith("/detected")) {
 				hermesClass=HotwordDetected.class;
 			} else if(topic.startsWith("rhasspy/nlu/")&&topic.endsWith("/trainSuccess")) {
@@ -802,4 +851,8 @@ public class HermesApi {
 			return result;
 		}
 	}
+//	
+//	public interface Startable {
+//		public void startup(Context context);
+//	}
 }

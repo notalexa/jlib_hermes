@@ -27,7 +27,7 @@ public class TrainSuccess implements HermesMessage<TrainSuccess> {
 	protected TrainSuccess() {
 	}
 
-	TrainSuccess(String siteId,String id) {
+	public TrainSuccess(String siteId,String id) {
 		this.siteId=siteId;
 		this.id=id;
 	}

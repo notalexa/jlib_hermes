@@ -25,9 +25,10 @@ public class AudioPlayBytes extends Binary<AudioPlayBytes> implements HermesMess
 	protected String siteId;
 	protected String requestId;
 	
-	AudioPlayBytes() {
+	protected AudioPlayBytes() {
 		super(null);
 	}
+	
 	public AudioPlayBytes(String siteId,String requestId,byte[] data) {
 		super(data);
 		this.siteId=siteId;

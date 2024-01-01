@@ -31,7 +31,7 @@ public class Phonemes implements HermesMessage<Phonemes>, RequestAnswer {
 	protected Phonemes() {
 	}
 
-	Phonemes(Map<String, Result[]> wordPhonemes, String id, String siteId, String sessionId) {
+	public Phonemes(Map<String, Result[]> wordPhonemes, String id, String siteId, String sessionId) {
 		this.wordPhonemes = wordPhonemes;
 		this.id = id;
 		this.siteId = siteId;

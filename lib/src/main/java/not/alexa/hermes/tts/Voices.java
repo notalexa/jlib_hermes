@@ -28,7 +28,7 @@ public class Voices implements HermesMessage<Voices>, RequestAnswer {
 	protected Voices() {
 	}
 	
-	Voices(Voice[] voices,String siteId,String id) {
+	public Voices(Voice[] voices,String siteId,String id) {
 		this.voices=voices;
 		this.siteId=siteId;
 		this.id=id;
