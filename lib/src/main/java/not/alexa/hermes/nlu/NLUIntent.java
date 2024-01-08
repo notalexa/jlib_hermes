@@ -133,7 +133,12 @@ public class NLUIntent implements HermesMessage<NLUIntent>, RequestAnswer {
 			answer.intent = intent;
 			return this;
 		}
-	
+
+		public Builder setIntent(String intent) {
+			answer.intent = new Intent(intent,1f);
+			return this;
+		}
+
 		public Builder addSlot(Slot slot) {
 			for(int i=0;i<slots.size();i++) {
 				if(slot.getEntity().equals(slots.get(i).getEntity())) {

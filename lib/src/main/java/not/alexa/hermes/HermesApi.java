@@ -54,9 +54,9 @@ import not.alexa.hermes.hotword.HotwordsRequest;
 import not.alexa.hermes.intent.handling.ToggleOff;
 import not.alexa.hermes.intent.handling.ToggleOn;
 import not.alexa.hermes.mqtt.HermesMqtt;
-import not.alexa.hermes.nlu.NLUIntent;
 import not.alexa.hermes.nlu.IntentNotRecognized;
 import not.alexa.hermes.nlu.NLUError;
+import not.alexa.hermes.nlu.NLUIntent;
 import not.alexa.hermes.nlu.Query;
 import not.alexa.hermes.nlu.Reply;
 import not.alexa.hermes.nlu.Train;
@@ -111,6 +111,8 @@ public class HermesApi {
 	private Set<Class<?>> loadedClasses=new HashSet<>();
 	private Map<Class<? extends HermesMessage<?>>,Binary<?>> binaryPrototypes=new HashMap<>();
 	private HermesComponent[] loadedComponents;
+	protected Map<String,Class<? extends HermesMessage<?>>> extensions=new HashMap<>();
+	private List<TopicMatcher> topicMatchers=new ArrayList<>();
 	/**
 	 * Create a context without a site id (typically a client).
 	 * 
@@ -143,12 +145,12 @@ public class HermesApi {
 		return UUID.randomUUID().toString();
 	}
 	
-	private static Context makeContext(Context parent,HermesComponent...components) {
+	private Context makeContext(Context parent,HermesComponent...components) {
 		if(components.length>0) {
 			Map<Class<?>,Object> resources=new HashMap<>();
 			List<Class<? extends HermesMessage<?>>> overlays=new ArrayList<>();
 			for(HermesComponent component:components) {
-				component.configure(resources, overlays);
+				component.configure(extensions,resources, overlays);
 			}
 			TypeLoader loader=parent.getTypeLoader().overlay(overlays.toArray(new Class[0]));
 			Context context=new Context.Default(parent) {
@@ -189,6 +191,16 @@ public class HermesApi {
 		Set<Feature> features=new HashSet<>();
 		Set<String> topics=new HashSet<>();
 		TypeLoader loader=context.getTypeLoader();
+		for(Map.Entry<String,Class<? extends HermesMessage<?>>> extension:extensions.entrySet()) {
+			if(loader.hasOverlays(extension.getValue())) {
+				topics.add(extension.getKey());
+				if(extension.getKey().indexOf('+')<0&&extension.getKey().indexOf('#')<0) {
+					classMap.put(extension.getKey(), extension.getValue());
+				} else {
+					topicMatchers.add(new TopicMatcher(extension.getKey(),extension.getValue()));
+				}
+			}
+		}
 		if(siteId!=null&&loader.hasOverlays(FeaturesRequest.class)) {
 			features.add(Feature.Features.initServer(siteId,topics, classMap));
 		}
@@ -269,7 +281,7 @@ public class HermesApi {
 		this.topics=topics.toArray(new String[topics.size()]);
 		this.loadedClasses.addAll(classMap.values());
 		for(HermesComponent component:components) {
-			component.startup(context);
+			component.startup(this,context);
 		}
 	}
 	
@@ -296,6 +308,11 @@ public class HermesApi {
 					receivedBinary(topic, AudioFrame.class, data);
 				} else if(topic.endsWith("/audioSessionFrame")) {
 					receivedBinary(topic, AudioSessionFrame.class, data);
+				}
+			} else for(TopicMatcher matcher:topicMatchers) {
+				if(matcher.matches(topic)) {
+					hermesClass=matcher.clazz;
+					break;
 				}
 			}
 		}
@@ -345,7 +362,7 @@ public class HermesApi {
 	private synchronized CodingScheme getScheme(@SuppressWarnings("rawtypes") Class<? extends HermesMessage> clazz) {
 		CodingScheme scheme=schemes.get(clazz);
 		if(scheme==null) {
-			scheme=prototype.newBuilder().setRootType(context.getTypeLoader().resolveType(clazz)).build();
+			scheme=prototype.newBuilder().setRootType(clazz).build();
 			schemes.put(clazz, scheme);
 		}
 		return scheme;
@@ -372,13 +389,24 @@ public class HermesApi {
 	 * @throws BaseException if an error occurs
 	 */
 	public void publish(HermesMessage<?> msg) throws BaseException {
+		publish(msg.getTopic(),encode(msg));
+	}
+
+	/**
+	 * Publish a message to a specific topic.
+	 * 
+	 * @param topic the topic
+	 * @param msg  the message to publish
+	 * @throws BaseException if an error occurs
+	 */
+	public void publish(String topic, byte[] msg) throws BaseException  {
 		try {
-			received(msg.getTopic(),encode(msg));
+			received(topic,msg);
 		} catch(IllegalTopicException e) {
 			BaseException.throwException(e);
 		}
 	}
-	
+
 	/**
 	 * Convenience method to query an NLU for the given input on the default site.
 	 * 
@@ -851,8 +879,39 @@ public class HermesApi {
 			return result;
 		}
 	}
-//	
-//	public interface Startable {
-//		public void startup(Context context);
-//	}
+
+	static class TopicMatcher {
+		String[] components;
+		boolean hasMultiLevelWildcard;
+		boolean hasEndWildcard;
+		Class<? extends HermesMessage<?>> clazz;
+		public TopicMatcher(String key, Class<? extends HermesMessage<?>> clazz) {
+			this.clazz=clazz;
+			if(key.endsWith("#")) {
+				hasEndWildcard=hasMultiLevelWildcard=true;
+				key=key.substring(0,key.length()-1);
+			} else {
+				hasEndWildcard=key.endsWith("+");
+			}
+			components=key.split("\\+");
+		}
+		
+		public boolean matches(String topic) {
+			int offset=0;
+			int c=0;
+			for(String component:components) {
+				if(topic.regionMatches(offset, component, 0,component.length())) {
+					c++;
+					int l=offset+component.length();
+					offset=topic.indexOf('/',offset+component.length());
+					if(offset<0) {
+						return c==components.length&&(hasEndWildcard||l==topic.length());
+					}
+				} else {
+					return false;
+				}
+			}
+			return hasMultiLevelWildcard;
+		}		
+	}
 }

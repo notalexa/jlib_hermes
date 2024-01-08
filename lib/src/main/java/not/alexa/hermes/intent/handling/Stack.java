@@ -58,7 +58,7 @@ public class Stack implements HermesComponent {
 	 * 
 	 * @param handlers the handlers
 	 */
-	public Stack(IntentHandler[] handlers) {
+	public Stack(IntentHandler...handlers) {
 		this(true,handlers);
 	}
 
@@ -68,17 +68,17 @@ public class Stack implements HermesComponent {
 	 * @param active is this instance active?
 	 * @param handlers the handlers
 	 */
-	public Stack(boolean active,IntentHandler[] handlers) {
+	public Stack(boolean active,IntentHandler...handlers) {
 		this.active=active;
 		this.handlers=handlers;
 	}
 
 
 	@Override
-	public void configure(Map<Class<?>, Object> resources, List<Class<? extends HermesMessage<?>>> overlays) {
+	public void configure(Map<String,Class<? extends HermesMessage<?>>> extensions,Map<Class<?>, Object> resources, List<Class<? extends HermesMessage<?>>> overlays) {
 		if(handlers!=null) for(IntentHandler handler:handlers) {
 			if(handler instanceof HermesComponent) {
-				((HermesComponent)handler).configure(resources, overlays);
+				((HermesComponent)handler).configure(extensions,resources, overlays);
 			}
 		}
 		resources.put(Stack.class,this);
@@ -89,16 +89,16 @@ public class Stack implements HermesComponent {
 	
 
 	@Override
-	public void startup(Context context) {
+	public void startup(HermesApi api,Context context) {
 		if(handlers!=null) for(IntentHandler handler:handlers) {
-			handler.startup(context);
+			handler.startup(api,context);
 		}
 	}
 
 	@Override
-	public void shutdown(Context context) {
+	public void shutdown(HermesApi api,Context context) {
 		if(handlers!=null) for(IntentHandler handler:handlers) {
-			handler.shutdown(context);
+			handler.shutdown(api,context);
 		}
 	}
 
@@ -126,8 +126,8 @@ public class Stack implements HermesComponent {
 	@Overlay
 	public class ToggleOnHandler extends ToggleOn {
 
-		public ToggleOnHandler() {
-			super();
+		protected ToggleOnHandler(@JsonProperty("siteId") String siteId) {
+			super(siteId);
 		}
 
 		@Override
@@ -147,8 +147,8 @@ public class Stack implements HermesComponent {
 	@Overlay
 	public class ToggleOffHandler extends ToggleOff {
 
-		public ToggleOffHandler() {
-			super();
+		protected ToggleOffHandler(@JsonProperty("siteId") String siteId) {
+			super(siteId);
 		}
 
 		@Override

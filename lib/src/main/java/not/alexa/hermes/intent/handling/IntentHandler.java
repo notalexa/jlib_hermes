@@ -40,13 +40,13 @@ public interface IntentHandler {
 	 * 
 	 * @param context the context to use for startup
 	 */
-	public default void startup(Context context) {
+	public default void startup(HermesApi api,Context context) {
 	}
 	
 	/**
 	 * Called on shutdown. Defaults to a no operation.
 	 * @param context the context on shutdown
 	 */
-	public default void shutdown(Context context) {
+	public default void shutdown(HermesApi api,Context context) {
 	}
 }

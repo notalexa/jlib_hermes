@@ -141,7 +141,7 @@ public class HermesMessageTest {
 					assertEquals("Hello world",msg.getText());
 					assertEquals("default", msg.getSiteId());
 					assertNull(msg.getSessionId());
-					assertNull(msg.getId());
+					assertNotNull(msg.getId());
 					assertNull(msg.getLang());
 					assertEquals(-1,msg.getVolume());
 					assertEquals("hermes/tts/say", msg.getTopic());
@@ -155,7 +155,7 @@ public class HermesMessageTest {
 				}),
 				new TestData<SayFinished>(new Say("Hello world").createFinished(),msg->{
 					assertEquals("default", msg.getSiteId());
-					assertNull(msg.getId());
+					assertNotNull(msg.getId());
 					assertEquals("hermes/tts/sayFinished", msg.getTopic());
 				}),
 				new TestData<VoicesRequest>(new VoicesRequest(),msg->{
@@ -507,6 +507,7 @@ public class HermesMessageTest {
 						.setCustomData(null)
 						.setAsrTokens(null)
 						.build(),msg->{
+					assertEquals("intent",msg.getIntent());
 					assertEquals("default", msg.getSiteId());
 					assertEquals("input words", msg.getInput());
 					assertEquals("sessionId", msg.getSessionId());
@@ -514,6 +515,8 @@ public class HermesMessageTest {
 					assertEquals(0.2f, msg.getConfidenceScore());
 					assertNull(msg.getId());
 					assertNull(msg.getCustomData());
+					assertNull(msg.getSlot("unknownslot"));
+					assertNotNull(msg.getSlot("entity"));
 					assertEquals(0,msg.getAsrTokens().length);
 					assertEquals(3,msg.getSlots().length);
 					assertEquals("entity",msg.getSlots()[2].getEntity());

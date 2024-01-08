@@ -31,26 +31,30 @@ import not.alexa.netobjects.Context;
 public interface HermesComponent {
 	
 	/**
-	 * Register the resources and overlays needed for this component.
+	 * Register extensions, resources and overlays needed for this component.
 	 * 
+	 * @param extensions the extensions table
 	 * @param resources the resources added to the context
 	 * @param overlays the overlays of the generated type loader
 	 */
-	public void configure(Map<Class<?>,Object> resources,List<Class<? extends HermesMessage<?>>> overlays);
+	public void configure(Map<String,Class<? extends HermesMessage<?>>> extensions,Map<Class<?>,Object> resources,List<Class<? extends HermesMessage<?>>> overlays);
 	
 	/**
 	 * Called on startup
+	 * 
+	 * @param api the api
 	 * @param context the startup context 
 	 */
-	public default void startup(Context context) {
+	public default void startup(HermesApi api,Context context) {
 	}
 	
 	/**
 	 * Called on shutdown
 	 * 
+	 * @param api the api
 	 * @param context the shutdown context
 	 */
-	public default void shutdown(Context context) {
+	public default void shutdown(HermesApi api,Context context) {
 	}
 
 }

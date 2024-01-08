@@ -98,7 +98,7 @@ public class UPnPHandler implements IntentHandler {
 	}
 
 	@Override
-	public void startup(Context context) {
+	public void startup(HermesApi api,Context context) {
 		if(upnp==null) try {
 			upnp=new UPnP(address, port).setMX(mx).setTTL(ttl).sayByeByeOnClose(sayByeByeOnClose).setHttpPort(httpPort);
 			upnp.start();
@@ -112,7 +112,7 @@ public class UPnPHandler implements IntentHandler {
 	}
 
 	@Override
-	public void shutdown(Context context) {
+	public void shutdown(HermesApi api,Context context) {
 		if(upnp!=null) {
 			upnp.close();
 		}

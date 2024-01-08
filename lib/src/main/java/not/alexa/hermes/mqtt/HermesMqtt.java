@@ -10,7 +10,6 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import not.alexa.hermes.HermesApi;
 import not.alexa.hermes.HermesComponent;
-import not.alexa.hermes.HermesMessage;
 import not.alexa.netobjects.BaseException;
 import not.alexa.netobjects.Context;
 
@@ -58,14 +57,14 @@ public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 	}
 
 	@Override
-	public void publish(HermesMessage<?> msg) throws BaseException {
-		try {
-			client.publish(msg.getTopic(), new MqttMessage(encode(msg)));
+	public void publish(String topic,byte[] msg) throws BaseException {
+		if(client!=null) try {
+			client.publish(topic, new MqttMessage(msg));
 		} catch(Throwable t) {
 			BaseException.throwException(t);
 		}
 	}
-	
+
 	public static MqttClient createClient(String uri) throws BaseException {
 		try {
 			return new MqttClient(uri, UUID.randomUUID().toString().substring(0,23),new MemoryPersistence());

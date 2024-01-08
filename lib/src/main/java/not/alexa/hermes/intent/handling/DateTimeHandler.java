@@ -47,7 +47,7 @@ public class DateTimeHandler implements IntentHandler {
 		calendar.setTimeInMillis(System.currentTimeMillis());
 		try {
 			if(intent.getIntent().contentEquals(dateIntent)) {
-				intent.reply(api,MessageFormat.format(dateFormat, calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)));
+				intent.reply(api,MessageFormat.format(dateFormat, calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.DAY_OF_MONTH)));
 				return true;
 			} else if(intent.getIntent().contentEquals(timeIntent)) {
 				intent.reply(api,MessageFormat.format(timeFormat, calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));

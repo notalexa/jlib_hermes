@@ -72,7 +72,7 @@ public class HttpHandler implements IntentHandler {
 	}
 
 	@Override
-	public void startup(Context context) {
+	public void startup(HermesApi api,Context context) {
 		if(handlers!=null&&handlers.size()>0) try {
 			server=HttpServer.create(new InetSocketAddress(port),10);
 			server.setExecutor(Executors.newCachedThreadPool());
@@ -86,7 +86,7 @@ public class HttpHandler implements IntentHandler {
 	}
 
 	@Override
-	public void shutdown(Context context) {
+	public void shutdown(HermesApi api,Context context) {
 		if(server!=null) try {
 			server.stop(0);
 		} catch(Throwable t) {

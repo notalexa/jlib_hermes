@@ -88,7 +88,7 @@ public class TTS implements HermesComponent {
 	
 
 	@Override
-	public void configure(Map<Class<?>, Object> resources, List<Class<? extends HermesMessage<?>>> overlays) {
+	public void configure(Map<String,Class<? extends HermesMessage<?>>> extensions,Map<Class<?>, Object> resources, List<Class<? extends HermesMessage<?>>> overlays) {
 		resources.put(TTS.class,this);
 		overlays.add(SayHandler.class);
 		overlays.add(AudioPlayFinishedHandler.class);
