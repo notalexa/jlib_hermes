@@ -43,19 +43,19 @@ import not.alexa.upnp.location.PublishedLocationDescriptor;
  *   - urn: urn:schemas-upnp-org:device:notalexa-butler:1
  *     uuid: c36d063d-3cb5-36c0-b6c1-5318b940db02
  *     descriptor:
- *       name: hermes.xml
+ *       name: butler.xml
  *       content: |
- *         <?xml version="1.0" encoding="UTF-8" standalone="no"?>
- *         <butler id="address">
- *           <name>My Home, my Castle</name>
- *           <site id="default" mqtt="tcp://${MQTT_HOST}:1883"/>
- *           <locations siteId="default">
- *             <name>Living Room</name>
- *           </locations>
- *           <locations siteId="default">
- *             <name>Kitchen</name>
- *           </locations>
- *         </butler>
+ *         &lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+ *         &lt;butler id="address"&gt;
+ *           &lt;name&gt;My Home, my Castle&lt;/name&gt;
+ *           &lt;site id="default" mqtt="tcp://${MQTT_HOST}:1883"/&gt;
+ *           &lt;locations siteId="default"&gt;
+ *             &lt;name&gt;Living Room&lt;/name&gt;
+ *           &lt;/locations&gt;
+ *           &lt;locations siteId="default"&gt;
+ *             &lt;name&gt;Kitchen&lt;/name&gt;
+ *           &lt;/locations&gt;
+ *         &lt;/butler&gt;
  * </pre>
  * The {@code uuid} is optional (and the descriptor fictional). If not set, the {@code urn} will be taken as the {@code uuid} assuming that there is exactly one device
  * in the network.
@@ -156,7 +156,7 @@ public class UPnPHandler implements IntentHandler {
 	 * @author notalexa
 	 */
 	public static class Descriptor {
-		@JsonProperty(required = true) protected String name;
+		@JsonProperty protected String name;
 		@JsonProperty protected String content;
 		
 		@JsonCreator

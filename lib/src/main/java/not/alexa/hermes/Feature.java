@@ -15,9 +15,11 @@
  */
 package not.alexa.hermes;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import not.alexa.hermes.HermesApi.FeaturesRequestHandler;
 import not.alexa.hermes.asr.ASRError;
 import not.alexa.hermes.asr.AudioCaptured;
 import not.alexa.hermes.asr.TextCaptured;
@@ -232,4 +234,18 @@ public enum Feature {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return a hermes component representing handling feature requests
+	 * @see FeaturesRequestHandler.class
+	 */
+	public static HermesComponent getFeatureComponent() {
+		return new HermesComponent() {
+			
+			@Override
+			public void configure(Map<String, Class<? extends HermesMessage<?>>> extensions, Map<Class<?>, Object> resources, List<Class<? extends HermesMessage<?>>> overlays) {
+				overlays.add(FeaturesRequestHandler.class);
+			}
+		};
+	}
 }

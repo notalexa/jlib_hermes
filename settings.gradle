@@ -9,3 +9,6 @@
 
 rootProject.name = 'jlib_hermes'
 include('lib')
+include('tts')
+include('media')
+include('upnp')

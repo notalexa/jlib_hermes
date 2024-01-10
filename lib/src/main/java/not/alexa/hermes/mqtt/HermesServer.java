@@ -15,10 +15,13 @@
  */
 package not.alexa.hermes.mqtt;
 
+import java.util.Arrays;
+
 import org.eclipse.paho.client.mqttv3.MqttClient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import not.alexa.hermes.Feature;
 import not.alexa.hermes.HermesApi;
 import not.alexa.hermes.HermesComponent;
 import not.alexa.netobjects.BaseException;
@@ -96,12 +99,15 @@ public class HermesServer implements AutoCloseable {
 	}
 	
 	/**
-	 * Startup this server
+	 * Startup this server.
+	 * 
 	 * @param context the base context to use
 	 * @throws BaseException if an error occurs
 	 */
 	public void startup(Context context) throws BaseException {
 		client=HermesMqtt.createClient(uri);
+		HermesComponent[] components=Arrays.copyOf(this.components,this.components.length+1);
+		components[components.length-1]=Feature.getFeatureComponent();
 		HermesMqtt api=new HermesMqtt(context, siteId, components);
 		try {
 			client.connect();
@@ -113,7 +119,8 @@ public class HermesServer implements AutoCloseable {
 	}
 	
 	/**
-	 * Shutdown this server
+	 * Shutdown this server.
+	 * 
 	 * @throws BaseException if an error occurs
 	 */
 	public void shutdown() throws BaseException {
