@@ -55,14 +55,14 @@ import not.alexa.netobjects.types.DefaultTypeLoader;
  * <li>{@code tuner://silence} is fix and plays silence
  * <li>{@code tuner://&lt;name&gt;} selects one of the configured urls (see below for configuration) or the error stream if the name is not configured.
  * <li>{@code tunein://&lt;name&gt;} selects the TuneIn channel with the given id. To find out the id of a stream, go to <a href="https://tunein.com">TuneIn</a>
- * and search for the stream. The id is the last part (beginning with {@code s}) of the url. For example, searching for "WDR 2" results in <a href"https://tunein.com/radio/WDR-2-Rheinland-1004-s213886/">https://tunein.com/radio/WDR-2-Rheinland-1004-s213886/</a>
+ * and search for the stream. The id is the last part (beginning with {@code s}) of the url. For example, searching for "WDR 2" results in <a href="https://tunein.com/radio/WDR-2-Rheinland-1004-s213886/">https://tunein.com/radio/WDR-2-Rheinland-1004-s213886/</a>
  * and the id is {@code s213886}.
  * </ul>
  * Configuration: Two (optional) parameters can be set:
  * <ul>
  * <li>{@code errorURL} denotes the url used if an url cannot be resolved (for example if {@code tuner://unknown} is requested but {@code unknown} is not a
  * configured URL. This field defaults to {@code tuner://silence} but if somebody wants WDR 2 as it's favourite error stream it can be set to {@code tunein://s213886}.
- * <li>{@code urls} is a map between symbolic names and real urls (including {@code tuner://silence}. The stream can than selected using {@code tuner://&lt;symbolic name&gt;}. After
+ * <li>{@code urls} is a map between symbolic names and real urls (including {@code tuner://silence}). The stream can than selected using {@code tuner://&lt;symbolic name&gt;}. After
  * <pre>
  * urls:
  * - key: wdr2
@@ -120,7 +120,7 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 		if("player:tuner".equals(uri)||uri.indexOf("://")>0) {
 			return 0;
 		} else {
-			return urls.containsKey(uri)?0:Integer.MAX_VALUE;
+			return urls==null?Integer.MAX_VALUE:urls.containsKey(uri)?0:Integer.MAX_VALUE;
 		}
 	}
 	

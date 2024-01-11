@@ -225,6 +225,12 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 					player.repeatTrack(false);
 					player.repeatAlbum(false);
 				}));
+			} else if("select".equals(cmd)) {
+				Slot slot=intent.getSlot("choose");
+				boolean select=slot==null||!"false".equals(slot.getValue());
+				executor.execute(Commands.Track.decorate(()->{
+					player.stopPeeking(select);
+				}));
 			} else if("info".equals(cmd)) {
 				executor.execute(Commands.Info.decorate(()->{
 					try {
