@@ -68,22 +68,22 @@ handlers:
 
 The following handlers are provided:
 
-### Log intent
+##### Log intent
 
 ``not.alexa.hermes.intent.handling.LogHandler`` has no parameters and logs the intent in a JSON format. Use this as the last handler if unknown intents should be
 logged. Use this as the first handler, if all intents should be logged.
 
 
-### Date/Time intent
+##### Date/Time intent
 
 ``not.alexa.hermes.intent.handling.DateTimeHandler`` is a configurable handler which provides date and time information and demonstrates the reply feature.
 The class handles a time intent (configurable via ``timeIntent``and defaulting to ``currentTime``) and a date intent (configurable via ``dateIntent``and defaulting to ``currentDate``) and replies with the time formatted with ``timeFormat`` or the date formatted with ``dateFormat``.
 
-### UPnP and Http
+##### UPnP and Http
 
 It's common to publish home functionality using UPnP or providing resources using a HTTP server which are provided in the [UPnP subproject](upnp/README.md)
 
-## Media (Audio) Server
+##### Media (Audio) Server
 
 One of the major motivations for this implementation was to provide an audio server in the [media subproject](media/README.md). The server has the following features:
 
