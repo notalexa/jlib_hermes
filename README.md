@@ -100,3 +100,20 @@ Currently not supported but planned are
 
 * Support for other audio formats then MP3
 * DLNA Media renderer support
+
+##### Android TV
+
+Handler using the remote service API to control an Android TV. For details see the [androidtv subproject](androidtv/README.md). Features are:
+
+* Send keycodes to the tv.
+* Send deep links to the tv.
+* Wake up using multicast DNS (zeroconf).
+* Turn on/off the tv.
+* Provide waiting intervals.
+
+Current limitations are:
+
+* Remote service protocol version 2 (protobuf) only.
+* The device (key) must already be paired. For a description see [here](androidtv/README.md#pairing)
+* All other features of the Remote Service API are not supported.
+

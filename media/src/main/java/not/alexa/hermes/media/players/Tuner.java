@@ -220,6 +220,7 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 
 		protected MP3AudioStream resolveStream(String url) throws IOException, BitstreamException {
 			URLConnection con=new URL(url).openConnection();
+			con.setReadTimeout(3000);
 			if("audio/x-mpegurl".equals(con.getContentType())) try(BufferedReader reader=new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 				String line;
 				while((line=reader.readLine())!=null) try {
@@ -238,7 +239,6 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 				}
 				throw new FileNotFoundException(url);
 			}
-			con.setReadTimeout(3000);
 			return new MP3AudioStream(new FilterInputStream(con.getInputStream()) {
 				boolean closed;
 					@Override
@@ -257,6 +257,7 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 					} else try {
 						return super.read();
 					} catch(IOException e) {
+						LOGGER.warn("Read from {} failed: {}.",url,e.getMessage());
 						close();
 						reopen(e);
 						return -1;
@@ -270,6 +271,7 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 					} else try {
 						return super.read(b, off, len);
 					} catch(IOException e) {
+						LOGGER.warn("Read from {} failed: {}.",url,e.getMessage());
 						close();
 						reopen(e);
 						return -1;
