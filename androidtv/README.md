@@ -4,7 +4,7 @@ This subproject provides a hermes handler controlling devices using the ATV remo
 
 * Send keycodes to the tv.
 * Send deep links to the tv.
-* Wake up using multicast DNS (zeroconf).
+* Wake up using multicast DNS (zeroconf) and (optionally) wake on lan.
 * Turn on/off the tv.
 * Provide waiting intervals.
 
@@ -16,12 +16,14 @@ Current limitations are:
 
 To get started, configure an intent handler using
 
-```[yaml]
+```yaml
 - class: de.notalexa.hermes.androidtv.IntentHandler
   ip: 192.168.0.33
   keystore: <path to the keystore>
   passwd: <secret of the keystore (and key)>
 ```
+
+
 `192.168.0.33` should be replaced by the ip address of your TV (which can be found using [this guide](https://displayradar.com/find-ip-address-on-tv).
 The keystore (and it's password) must be configured **and paired to the tv** as described [below](#setup-security).  
 
@@ -29,8 +31,9 @@ The handler understands the intent `tv:executeCommand` with a slot `cmd`. The in
 ``intentBase``. The value of ``cmd`` should be a comma separated list of commands with the following content:
 
 
+
 * A keycode from the list in {@link KeyCode}. The name is case insensitive and the preceding `KEYCODE_` can be omitted.
-Therefor `turnon` or `turnoff` is perfectly valid.
+Therefore `turnon` or `turnoff` is perfectly valid.
 * A number which is transformed in a list of {@code KeyCode}'s for every digit.
 * A deep link starting with `http`. The link can be continued after a `,` by quoting the `,` with `\` (which must be quoted
 at the end of a command with `\\`):
@@ -41,7 +44,7 @@ at the end of a command with `\\`):
 * TV is on.
 * `w<time>` with `time` a number indicating to wait this number of milliseconds until processing the next message.
  
-## Using deep links with a deep link lauchner
+## Using deep links with a deep link launcher
  
 Deep links are the only possibility to launch applications on your TV. Unfortunately some popular apps do not provide an implementation of
 deep links (like "Magenta TV" for example). In this case, you can use the [Deep Link Launcher](https://github.com/notalexa/proj_deeplinklauncher)
@@ -82,11 +85,14 @@ openssl pkcs12 -export -in app.crt -inkey app.key -name pairingkey -out pairingk
 ```
 
 (the password is the password needed in your handler configuration)
-
-
-
-
 </ol>
+
+## Wake up using Wake On Lan
+
+From experience, waking up the TV can be challenging. By default, multicast DNS queries for `_androidtvremote2._tcp.local` and `_googlecast._tcp.local`
+are send. Sometimes, this is not sufficient (for example on a Philips TV after some time of sleeping). If Wake On Lan can be turned on on the TV, the
+handler supports an additional field `mac`. If set to the MAC address of the TV (in the format `11:22:33:44:55:66`), the handler also sends WOL magic packets
+to turn the TV on.
 
 
 

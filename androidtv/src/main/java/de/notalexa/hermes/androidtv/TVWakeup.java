@@ -16,8 +16,12 @@
 package de.notalexa.hermes.androidtv;
 
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.util.Collections;
 
 /**
  * Wakeup thread if the TV is not responding to the first connection attempt. The thread sends a multicast DNS query with
@@ -51,11 +55,14 @@ public class TVWakeup extends Thread {
 	};
 	
 	private boolean shutdown;
-	
+	private WakeOnLan wol;
 
-	public TVWakeup() {
+	public TVWakeup(String mac) {
 		super("tv wakeup");
 		setDaemon(true);
+		if(mac!=null) {
+			wol=new WakeOnLan(mac);
+		}
 	}
 	
 	public void shutdown() {
@@ -67,12 +74,66 @@ public class TVWakeup extends Thread {
 			InetAddress addr=InetAddress.getByName("224.0.0.251");
 			socket.joinGroup(addr);
 			while(!shutdown) {
+				if(wol!=null) {
+					wol.send();
+				}
 				DatagramPacket data=new DatagramPacket(QUERY, QUERY.length,addr,5353);
 				socket.send(data);
 				Thread.sleep(1000);
 			}
 		} catch(Throwable t) {
 			Handler.LOGGER.error("Sending wake up query failed.",t);
+		}
+	}
+	
+	/**
+	 * Implements Wake on Lan (WOL) support. The magic packet is written on each interface with a broadcast address
+	 * using the {@link #send()} method.
+	 */
+	public static class WakeOnLan {
+		private byte[] message;
+		
+		/**
+		 * Construct wake on lan support.
+		 * 
+		 * @param mac the mac address in format 11:22:33:44:55:66
+		 */
+		public WakeOnLan(String mac) {
+			try {
+				byte[] message=new byte[16*7];
+				message[0]=message[1]=message[2]=message[3]=message[4]=message[5]=(byte)0xff;
+				String[] s=mac.split(":");
+				if(s.length==6) {
+					for(int i=0;i<6;i++) {
+						byte b=(byte)Integer.parseInt(s[i],16);
+						for(int j=6;j<=16*6;j+=6) {
+							message[j+i]=b;
+						}
+					}
+				}
+				this.message=message;
+			} catch(Throwable t) {
+				//Misconfigured. Ignore
+			}
+			
+		}
+
+		/**
+		 * Send the magic packet over every network interface with a broadcast address.
+		 */
+		public void send() {
+	        if(message!=null) for(int i=0;i<1;i++) try(DatagramSocket socket = new DatagramSocket()) {
+				for(NetworkInterface nif:Collections.list(NetworkInterface.getNetworkInterfaces())) {
+					for(InterfaceAddress ia:nif.getInterfaceAddresses()) {
+						if(ia.getBroadcast()!=null) {
+				            DatagramPacket packet = new DatagramPacket(message, message.length, ia.getBroadcast(), 9);
+					        socket.send(packet);
+						}
+					}
+				}
+	        } catch(Throwable t) {
+	        	// Ignore
+	        }
 		}
 	}
 }

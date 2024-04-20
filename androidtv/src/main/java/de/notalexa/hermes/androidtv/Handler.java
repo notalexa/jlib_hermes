@@ -76,6 +76,7 @@ public class Handler implements IntentHandler {
 	@JsonProperty(value="keystore", required = true) String keyFile;
 	@JsonProperty(required = true) String passwd;
 	@JsonProperty(defaultValue = "tv") String intentBase="tv";
+	@JsonProperty String mac;
 	private Connection con;
 	private LinkedBlockingQueue<String> commandQueue=new LinkedBlockingQueue<>(20);
 	private CountDownLatch awaitLatch;
@@ -181,7 +182,8 @@ public class Handler implements IntentHandler {
 				while(!stopped) {
 					String cmd=queue.poll(200, TimeUnit.MILLISECONDS);
 					if(cmd!=null) {
-						connect().cmd(cmd);
+						Message[] cmds=Message.resolve(cmd);
+						connect(cmds).cmd(cmds);
 					}
 				}
 			} catch(Throwable t) {
@@ -253,9 +255,9 @@ public class Handler implements IntentHandler {
 		}
 
 		
-		private synchronized Connection connect() throws IOException {
-			if(!socket.isConnected()) {
-				TVWakeup wakeUp=new TVWakeup();
+		private synchronized Connection connect(Message[] cmds) throws IOException {
+			if(cmds.length>0&&!socket.isConnected()) {
+				TVWakeup wakeUp=new TVWakeup(mac!=null&&cmds[0]==KeyCode.KEYCODE_TURN_ON?mac:null);
 				try {
 					for(int i=0;i<10;i++) try {
 						socket.connect(new InetSocketAddress(ip,6466),5000);
@@ -310,8 +312,8 @@ public class Handler implements IntentHandler {
 		}
 
 		
-		private Connection cmd(String code) throws Throwable {
-			for(Message keyCode:Message.resolve(code)) {
+		private Connection cmd(Message[] cmds) throws Throwable {
+			for(Message keyCode:cmds) {
 				if(!cmd(keyCode)) {
 					break;
 				}
@@ -321,7 +323,7 @@ public class Handler implements IntentHandler {
 
 		boolean cmd(Message code) throws Throwable {
 			try {
-				if(readyLatch.await(2000,TimeUnit.MILLISECONDS)) {
+				if(readyLatch.await(5000,TimeUnit.MILLISECONDS)) {
 					return code.perform(this);
 				}
 				LOGGER.info("Awaiting the latch failed.");
