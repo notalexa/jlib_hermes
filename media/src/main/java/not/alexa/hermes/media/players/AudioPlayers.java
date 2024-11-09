@@ -16,8 +16,13 @@
 package not.alexa.hermes.media.players;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.sound.sampled.AudioFormat;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -37,7 +42,8 @@ import not.alexa.netobjects.Context;
  * @author notalexa
  */
 public class AudioPlayers extends AbstractPlayer<Void> {
-	
+	private static final Logger LOGGER=LoggerFactory.getLogger(AudioPlayers.class);
+	@JsonProperty(defaultValue="satellite:.*") private Pattern ignore;
 	@JsonProperty private List<AudioPlayer> players;
 	private AudioPlayer currentPlayer;
 
@@ -156,6 +162,10 @@ public class AudioPlayers extends AbstractPlayer<Void> {
 				score=s;
 				selected=player;
 			}
+		}
+		if(selected==null&&ignore!=null&&ignore.asPredicate().test(uri)) {
+			LOGGER.info("Uri {} ignored.",uri);
+			return currentPlayer!=null;
 		}
 		if(selected!=currentPlayer) {
 			if(currentPlayer!=null) {

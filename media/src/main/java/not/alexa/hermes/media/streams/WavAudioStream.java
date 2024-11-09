@@ -21,6 +21,7 @@ import javax.sound.sampled.AudioFormat;
 /**
  * Audio stream based on WAV data. The header is assumed to contain RIFF, fmt and data tag only (length is 44 bytes).
  * 
+ * @author notalexa
  */
 public class WavAudioStream extends ByteArrayAudioStream {
 

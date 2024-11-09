@@ -323,10 +323,10 @@ public class Handler implements IntentHandler {
 
 		boolean cmd(Message code) throws Throwable {
 			try {
-				if(readyLatch.await(5000,TimeUnit.MILLISECONDS)) {
+				if(readyLatch.await(60000,TimeUnit.MILLISECONDS)) {
 					return code.perform(this);
 				}
-				LOGGER.info("Awaiting the latch failed.");
+				LOGGER.info("Awaiting the latch failed after 60sec.");
 			} catch(InterruptedException e) {
 			}
 			LOGGER.warn("Key {} ignored.",code);

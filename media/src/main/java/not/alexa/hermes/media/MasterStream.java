@@ -206,6 +206,9 @@ public class MasterStream implements AudioControls {
 		synchronized(streamLock) {
 			if(this.format==format) {
 				return update(volume==256,volume,volume,buffer,offset,length);
+			} else if(this.format.matches(format)) {
+				this.format=format;
+				return read(format, buffer, offset, length);
 			} else {
 				return -2;
 			}

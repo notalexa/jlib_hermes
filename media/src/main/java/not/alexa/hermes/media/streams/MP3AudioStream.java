@@ -18,7 +18,6 @@ package not.alexa.hermes.media.streams;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -31,6 +30,7 @@ import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.MP3Decoder;
 import javazoom.jl.decoder.OutputBuffer;
 import not.alexa.hermes.media.AudioStream;
+import not.alexa.hermes.media.io.SeekableInputStream;
 
 /**
  * MP3 audio stream based on an underlying input stream.
@@ -38,22 +38,32 @@ import not.alexa.hermes.media.AudioStream;
  * @author notalexa
  */
 public class MP3AudioStream implements AudioStream {
+	private final SeekableInputStream seek;
     private final MP3InputStream in;
     private AudioInfo info;
     private int offset;
     protected final long size;
 
-    public MP3AudioStream(InputStream audioIn, String title,float normalizationFactor, long size) throws IOException, BitstreamException {
-    	audioIn=new BufferedInputStream(audioIn,2048);
-    	this.size=size;
-    	this.info=new AudioInfo(null, title, -1);
-    	offset=new ID3Handler().parse(audioIn);
-        this.in = new MP3InputStream(audioIn, normalizationFactor,size-offset);
-        if(in.duration>0) {
-        	info=new AudioInfo(info.getArtist(), info.getTitle(), in.duration/1000f);
-        }
+    public MP3AudioStream(InputStream audioIn, String title,float normalizationFactor, long size) throws IOException {
+    	this(audioIn,new AudioInfo(null,title,-1),normalizationFactor,size);
     }
     
+    public MP3AudioStream(InputStream audioIn, AudioInfo info,float normalizationFactor, long size) throws IOException {
+    	audioIn=new BufferedInputStream(audioIn,2048);
+    	seek=audioIn instanceof SeekableInputStream?(SeekableInputStream)audioIn:null;
+    	this.size=size;
+    	this.info=info;
+    	offset=new ID3Handler().parse(audioIn);
+    	try {
+	        this.in = new MP3InputStream(audioIn, normalizationFactor,size-offset);
+	        if(in.duration>0) {
+	        	info=info.forDuration(in.duration/1000f);
+	        }
+    	} catch(BitstreamException t) {
+    		throw new IOException(t);
+    	}
+    }
+        
     @Override
 	public boolean seekTo(float time) {
     	if(in.duration>0) {
@@ -80,7 +90,7 @@ public class MP3AudioStream implements AudioStream {
 	}
 
     protected boolean seekBytes(long bytes) {
-    	return false;
+    	return seek==null?false:seek.seekTo(bytes);
     }
 
 	@Override

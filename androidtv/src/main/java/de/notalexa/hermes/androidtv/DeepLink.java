@@ -42,4 +42,8 @@ public class DeepLink implements Message {
 								proto.string(1,link))));
 		return true;
 	}
+	
+	public String toString() {
+		return "Link["+link+"]";
+	}
 }

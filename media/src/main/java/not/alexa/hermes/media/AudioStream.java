@@ -16,11 +16,15 @@
 package not.alexa.hermes.media;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import not.alexa.hermes.media.streams.MP3AudioStream;
+import not.alexa.hermes.media.streams.VorbisStream;
 
 /**
  * One of the basic interfaces of this player representing an audio stream.
@@ -249,12 +253,22 @@ public interface AudioStream extends AutoCloseable {
 		@JsonProperty private String title;
 		@JsonProperty private float position;
 		@JsonProperty private float duration;
+		@JsonProperty(defaultValue = "0") float gain;
+		@JsonProperty(defaultValue = "1") float peak;
+
 		protected AudioInfo() {
 		}
+
 		public AudioInfo(String artist,String title,float duration) {
+			this(artist,title,duration,0,1);
+		}
+
+		public AudioInfo(String artist,String title,float duration,float gain,float peak) {
 			this.artist=artist;
 			this.title=title;
 			this.duration=duration;
+			this.gain=gain;
+			this.peak=peak;
 		}
 		
 		/**
@@ -271,7 +285,28 @@ public interface AudioStream extends AutoCloseable {
 				return this;
 			}
 		}
-		
+
+		public AudioInfo forDuration(float duration) {
+			try {
+				AudioInfo info=(AudioInfo)super.clone();
+				info.duration=duration;
+				return info;
+			} catch(Throwable t) {
+				return this;
+			}
+		}
+
+		public AudioInfo forNormalizationData(float gain,float peak) {
+			try {
+				AudioInfo info=(AudioInfo)super.clone();
+				info.gain=gain;
+				info.peak=peak;
+				return info;
+			} catch(Throwable t) {
+				return this;
+			}
+		}
+
 		/**
 		 * 
 		 * @return the artist
@@ -295,6 +330,14 @@ public interface AudioStream extends AutoCloseable {
 		 */
 		public float getDuration() {
 			return duration;
+		}
+		
+		public float getGain() {
+			return gain;
+		}
+		
+		public float getPeak() {
+			return peak;
 		}
 		
 		/**
@@ -328,6 +371,19 @@ public interface AudioStream extends AutoCloseable {
 		 * Called whenever the <i>state</i> of this stream changes.
 		 */
 		public default void onStateChanged() {
+		}
+	}
+	
+	public enum MediaType {
+		Wav,MP3,Vorbis,AAC,PCM,Unknown;
+		
+		public AudioStream create(InputStream in,long size,AudioInfo info,float normalizationFactor) throws IOException {
+			switch(this) {
+				case MP3: return new MP3AudioStream(in, info, normalizationFactor, size);
+				case Vorbis: return new VorbisStream(in, info,normalizationFactor,size);
+				default:
+					throw new IOException("Unsupported Media Type "+this);
+			}
 		}
 	}
 }

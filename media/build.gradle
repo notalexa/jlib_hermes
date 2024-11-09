@@ -3,6 +3,7 @@ dependencies {
 	implementation project(':lib')
 	implementation project(':tts')
 	implementation group: 'not.alexa', name: 'jlib-netobjects', version: '0.9.1'
+	implementation group: 'org.jcraft', name: 'jorbis', version: '0.0.17'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.14.2'
 	implementation group: 'com.badlogicgames.jlayer', name: 'jlayer', version: '1.0.2-gdx'
 	implementation group: 'org.jetbrains', name: 'annotations', version: '24.0.1'

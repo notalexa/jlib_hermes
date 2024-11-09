@@ -17,9 +17,6 @@ package not.alexa.hermes.media.players;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
@@ -33,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import not.alexa.hermes.media.AudioPlayer;
 import not.alexa.hermes.media.AudioStream;
 import not.alexa.hermes.media.PlayerState;
+import not.alexa.hermes.media.io.SeekableFileInputStream;
 import not.alexa.hermes.media.streams.MP3AudioStream;
 import not.alexa.hermes.media.streams.Silence;
 
@@ -441,24 +439,7 @@ public class JukeBox extends AbstractPlayer<File> implements AudioPlayer {
 		public AudioStream open() {
 			Track candidate=this;
 			for(int i=0;i<10;i++) try {
-				RandomAccessFile file=new RandomAccessFile(candidate.f,"r");
-				return new MP3AudioStream(new FileInputStream(file.getFD()) {
-					@Override
-					public void close() throws IOException {
-						super.close();
-						file.close();
-					}
-				},candidate.getInfo(), 1f, candidate.f.length()) {
-					@Override
-					protected boolean seekBytes(long position) {
-						try {
-							file.seek(position);
-							return true;
-						} catch(Throwable t) {
-							return false;
-						}
-					}
-				};
+				return new MP3AudioStream(new SeekableFileInputStream(candidate.f),candidate.getInfo(), 1f, candidate.f.length());
 			} catch(Throwable t) {
 				LoggerFactory.getLogger(JukeBox.class).error("Getting "+f.getAbsolutePath()+" failed.",t);
 				candidate=new Album(baseDir()).randomTrack();
