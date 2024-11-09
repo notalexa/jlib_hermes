@@ -87,7 +87,7 @@ public class CacheManager implements PlaybackTrackFacade {
 					return name.endsWith(".meta");
 				}
 			});
-			unusable|=metaData!=null;
+			unusable|=metaData==null;
 			if(!unusable) {
 				Arrays.sort(metaData,new Comparator<File>() {
 					@Override
