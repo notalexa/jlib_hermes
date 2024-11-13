@@ -33,7 +33,9 @@ public interface IntentHandler {
 	 * @return {@code true} if the intent was consumed and should be removed from the stack
 	 * or {@code false} otherwise
 	 */
-	public boolean onIntentReceived(HermesApi api,NLUIntent intent);
+	public default boolean onIntentReceived(HermesApi api,NLUIntent intent) {
+		return false;
+	}
 	
 	/**
 	 * Called on startup. Defaults to a no operation.

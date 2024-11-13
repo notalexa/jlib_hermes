@@ -1,6 +1,5 @@
 package not.alexa.hermes.mqtt;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -48,7 +47,9 @@ public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 		this.client=client;
 		if(topics.length>0) try {
 			IMqttMessageListener[] callbacks=new IMqttMessageListener[topics.length];
-			Arrays.fill(callbacks,this);
+			for(int i=0;i<callbacks.length;i++) {
+				callbacks[i]=createListener(topics[i]);
+			}
 			client.subscribe(topics,callbacks);
 		} catch(Throwable t) {
 			return BaseException.throwException(t);
@@ -85,8 +86,22 @@ public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 	protected void addTopic(String topic) {
 		super.addTopic(topic);
 		try {
-			client.subscribe(topic,this);
+			client.subscribe(topic,createListener(topic));
 		} catch(Throwable t) {
+		}
+	}
+	
+	protected IMqttMessageListener createListener(String topic) {
+		Subscriber subscriber=subscribers.get(topic);
+		if(subscriber==null) {
+			return this;
+		} else {
+			return new IMqttMessageListener() {
+				@Override
+				public void messageArrived(String topic, MqttMessage message) throws Exception {
+					subscriber.received(HermesMqtt.this, topic, message.getPayload());
+				}
+			};
 		}
 	}
 }

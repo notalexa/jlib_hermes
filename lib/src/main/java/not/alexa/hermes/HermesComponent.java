@@ -37,7 +37,8 @@ public interface HermesComponent {
 	 * @param resources the resources added to the context
 	 * @param overlays the overlays of the generated type loader
 	 */
-	public void configure(Map<String,Class<? extends HermesMessage<?>>> extensions,Map<Class<?>,Object> resources,List<Class<? extends HermesMessage<?>>> overlays);
+	public default void configure(Map<String,Class<? extends HermesMessage<?>>> extensions,Map<Class<?>,Object> resources,List<Class<? extends HermesMessage<?>>> overlays) {
+	}
 	
 	/**
 	 * Called on startup

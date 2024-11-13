@@ -113,6 +113,7 @@ public class HermesApi {
 	private HermesComponent[] loadedComponents;
 	protected Map<String,Class<? extends HermesMessage<?>>> extensions=new HashMap<>();
 	private List<TopicMatcher> topicMatchers=new ArrayList<>();
+	protected Map<String,Subscriber> subscribers=new HashMap<>();
 	/**
 	 * Create a context without a site id (typically a client).
 	 * 
@@ -530,6 +531,19 @@ public class HermesApi {
 		tmp[topics.length]=topic;
 		topics=tmp;
 	}
+	
+	/**
+	 * Add a topic with the given subscriber
+	 * 
+	 * @param topic the topic to add
+	 * @param subscriber the subscriber for this topic
+	 */
+	public void addTopic(String topic,Subscriber subscriber) {
+		if(!subscribers.containsKey(topic)) {
+			subscribers.put(topic, subscriber);
+			addTopic(topic);
+		}
+	}
 
 	/**
 	 * Method to publish a hermes message expecting an answer. A use case can be a {@link FeaturesRequest} with an expected {@link Features}
@@ -913,5 +927,22 @@ public class HermesApi {
 			}
 			return hasMultiLevelWildcard;
 		}		
+	}
+	
+	/**
+	 * Subscriberinterface for a given topic (or class of topics).
+	 * 
+	 * @author notalexa
+	 * @see HermesApi#addTopic(String, Subscriber)
+	 */
+	public interface Subscriber {
+		/**
+		 * Called whenever a matching topic is received.
+		 * 
+		 * @param api the hermes api
+		 * @param topic the topic of the received message
+		 * @param msg the message itself
+		 */
+		public void received(HermesApi api, String topic, byte[] msg);
 	}
 }
