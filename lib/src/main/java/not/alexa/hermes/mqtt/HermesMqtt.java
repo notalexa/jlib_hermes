@@ -2,10 +2,15 @@ package not.alexa.hermes.mqtt;
 
 import java.util.UUID;
 
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import not.alexa.hermes.HermesApi;
 import not.alexa.hermes.HermesComponent;
@@ -20,7 +25,8 @@ import not.alexa.netobjects.Context;
  *
  */
 public class HermesMqtt extends HermesApi implements IMqttMessageListener {
-	private MqttClient client;
+	private static Logger LOGGER=LoggerFactory.getLogger(HermesMqtt.class);
+	private IMqttClient client;
 	
 	public HermesMqtt(Context context,HermesComponent...components) {
 		super(context,components);
@@ -37,7 +43,7 @@ public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 	 * @return this instance
 	 * @throws BaseException if an error occurs
 	 */
-	public HermesMqtt subscribeTo(MqttClient client) throws BaseException {
+	public HermesMqtt subscribeTo(IMqttClient client) throws BaseException {
 		if(this.client!=null) {
 			throw new BaseException(BaseException.FORBIDDEN,"Api already subscribed to "+client.getServerURI());
 		}
@@ -54,6 +60,25 @@ public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 		} catch(Throwable t) {
 			return BaseException.throwException(t);
 		}
+		client.setCallback(new MqttCallbackExtended() {
+			@Override
+			public void connectionLost(Throwable cause) {
+				LOGGER.warn("Connection to {} lost ({})",client.getServerURI(),cause==null?'?':cause.getMessage()==null?cause.getClass().getSimpleName():cause.getMessage());
+			}
+			
+			@Override
+			public void connectComplete(boolean reconnect, String serverURI) {
+				LOGGER.info("Connection to {} established (reconnect={})",serverURI,reconnect);
+			}
+
+			@Override
+			public void messageArrived(String topic, MqttMessage message) throws Exception {
+			}
+
+			@Override
+			public void deliveryComplete(IMqttDeliveryToken token) {
+			}
+		});
 		return this;
 	}
 

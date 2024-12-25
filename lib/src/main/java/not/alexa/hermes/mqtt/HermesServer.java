@@ -15,9 +15,12 @@
  */
 package not.alexa.hermes.mqtt;
 
+import java.net.ConnectException;
 import java.util.Arrays;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -99,18 +102,44 @@ public class HermesServer implements AutoCloseable {
 	}
 	
 	/**
+	 * Create options for special purposes
+	 * 
+	 * @param reconnect should the client try to reconnect automatically?
+	 * @return options for the specified configuration
+	 */
+	public static MqttConnectOptions createConnectOptions(boolean reconnect) {
+		MqttConnectOptions options=new MqttConnectOptions();
+		options.setCleanSession(false);
+		if(reconnect) {
+			options.setAutomaticReconnect(true);
+			options.setMaxReconnectDelay(60000);
+		}
+		return options;
+	}
+
+	
+	/**
 	 * Startup this server.
 	 * 
 	 * @param context the base context to use
 	 * @throws BaseException if an error occurs
 	 */
 	public void startup(Context context) throws BaseException {
-		client=HermesMqtt.createClient(uri);
 		HermesComponent[] components=Arrays.copyOf(this.components,this.components.length+1);
 		components[components.length-1]=Feature.getFeatureComponent();
 		HermesMqtt api=new HermesMqtt(context, siteId, components);
 		try {
-			client.connect();
+			client=HermesMqtt.createClient(uri);
+			while(!client.isConnected()) try {
+				client.connect(createConnectOptions(true));
+			} catch(MqttException e) {
+				if(e.getCause() instanceof ConnectException) try {
+					Thread.sleep(1000);
+				} catch(Throwable t) {
+				} else {
+					throw e;
+				}
+			}
 			api.subscribeTo(client);
 		} catch(Throwable t) {
 			BaseException.throwException(t);
