@@ -1,0 +1,666 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- *
+ * This software is distributed in the hope that it will be useful,
+ * but is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * This software may only be used to program products purchased from
+ * Analog Devices for incorporation by you into audio products that
+ * are intended for resale to audio product end users. This software
+ * may not be distributed whole or in any part to third parties.
+ *
+ * Copyright ©2024 Analog Devices, Inc. All rights reserved.
+ */
+-->
+<!--SigmaStudio export XML file-->
+<Schematic>
+    <IC>
+        <Name>IC 1</Name>
+        <PartNumber>ADAU1451</PartNumber>
+        <Register>
+            <Name>__SafeLoad_Module__data_SafeLoad</Name>
+            <Address>0</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>20</Size>
+            <Data>0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>__SafeLoad_Module__address_SafeLoad</Name>
+            <Address>0</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>4</Size>
+            <Data>0x00, 0x00, 0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOFT_RESET</Name>
+            <Address>63632</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOFT_RESET</Name>
+            <Address>63632</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.Reset Delay</Name>
+            <Address>0</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0xFF, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.HIBERNATE</Name>
+            <Address>62464</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.HIBERNATE</Name>
+            <Address>62464</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.Hibernate Delay</Name>
+            <Address>0</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0xFF, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.KILL_CORE</Name>
+            <Address>62467</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.KILL_CORE</Name>
+            <Address>62467</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.PLL_ENABLE</Name>
+            <Address>61443</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.PLL_CTRL0 Register</Name>
+            <Address>61440</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x60, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.PLL_CTRL1 Register</Name>
+            <Address>61441</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.PLL_CLK_SRC Register</Name>
+            <Address>61442</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MCLK_OUT Register</Name>
+            <Address>61445</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x03, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.PLL_ENABLE Register</Name>
+            <Address>61443</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.PLL Lock Delay</Name>
+            <Address>0</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0xFF, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.POWER_ENABLE0 Register</Name>
+            <Address>61520</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x1F, 0xFF, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.POWER_ENABLE1 Register</Name>
+            <Address>61521</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x1F, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.ASRC_MUTE</Name>
+            <Address>62849</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x06, 0xFC, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MP6_MODE</Name>
+            <Address>62742</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x07, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MP7_MODE</Name>
+            <Address>62743</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x07, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MP8_MODE</Name>
+            <Address>62744</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x0C, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MP9_MODE</Name>
+            <Address>62745</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x70, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MP6_WRITE</Name>
+            <Address>62758</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MP7_WRITE</Name>
+            <Address>62759</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.BCLK_OUT3_PIN</Name>
+            <Address>63367</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x1B, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SDATA_OUT0_PIN</Name>
+            <Address>63380</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x18, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SDATA_OUT1_PIN</Name>
+            <Address>63381</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x18, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SDATA_OUT2_PIN</Name>
+            <Address>63382</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x18, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SDATA_OUT3_PIN</Name>
+            <Address>63383</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x18, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SPDIF_TX_PIN</Name>
+            <Address>63384</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x18, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SCLK_SCL_PIN</Name>
+            <Address>63385</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x0A, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SS_PIN</Name>
+            <Address>63387</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x08, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MOSI_ADDR1_PIN</Name>
+            <Address>63388</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x08, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SCLK_SCL_M_PIN</Name>
+            <Address>63389</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x18, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MISO_SDA_M_PIN</Name>
+            <Address>63390</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x18, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.MOSI_M_PIN</Name>
+            <Address>63392</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x0F, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.CLKOUT_PIN</Name>
+            <Address>63395</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x1F, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.ASRC_INPUT1</Name>
+            <Address>61697</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x40, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.ASRC_OUT_RATE0</Name>
+            <Address>61760</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x06, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.ASRC_OUT_RATE1</Name>
+            <Address>61761</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x06, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.ASRC_OUT_RATE6</Name>
+            <Address>61766</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x06, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.ASRC_OUT_RATE7</Name>
+            <Address>61767</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x06, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE0</Name>
+            <Address>61824</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x31, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE1</Name>
+            <Address>61825</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x31, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE2</Name>
+            <Address>61826</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE3</Name>
+            <Address>61827</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE4</Name>
+            <Address>61828</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE5</Name>
+            <Address>61829</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE6</Name>
+            <Address>61830</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE7</Name>
+            <Address>61831</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE8</Name>
+            <Address>61832</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x3A, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE9</Name>
+            <Address>61833</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE10</Name>
+            <Address>61834</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE11</Name>
+            <Address>61835</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE12</Name>
+            <Address>61836</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE13</Name>
+            <Address>61837</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE14</Name>
+            <Address>61838</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE15</Name>
+            <Address>61839</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE16</Name>
+            <Address>61840</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE17</Name>
+            <Address>61841</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE18</Name>
+            <Address>61842</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE19</Name>
+            <Address>61843</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE20</Name>
+            <Address>61844</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x3B, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE21</Name>
+            <Address>61845</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x3B, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE22</Name>
+            <Address>61846</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SOUT_SOURCE23</Name>
+            <Address>61847</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SPDIFTX_INPUT</Name>
+            <Address>61888</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x02, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_0_0</Name>
+            <Address>61952</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x40, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_1_0</Name>
+            <Address>61956</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x40, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_2_0</Name>
+            <Address>61960</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x48, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_3_0</Name>
+            <Address>61964</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x6C, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_4_0</Name>
+            <Address>61968</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x40, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_4_1</Name>
+            <Address>61969</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x22, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_5_0</Name>
+            <Address>61972</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x40, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_5_1</Name>
+            <Address>61973</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x22, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_6_0</Name>
+            <Address>61976</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x40, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_6_1</Name>
+            <Address>61977</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x22, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_7_0</Name>
+            <Address>61980</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x40, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SERIAL_BYTE_7_1</Name>
+            <Address>61981</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x22, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.SPDIF_RESTART</Name>
+            <Address>62980</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Program>
+            <Name>Program Data</Name>
+            <Address>49152</Address>
+            <AddrIncr>4</AddrIncr>
+            <Size>132</Size>
+            <Data>0x00, 0x00, 0x00, 0x02, 0x0C, 0x00, 0xDC, 0xDC, 0x0D, 0x00, 0xFF, 0xD2, 0x0D, 0x00, 0xFF, 0xD0, 0x0D, 0x00, 0xF4, 0x50, 0x0D, 0x00, 0xF4, 0x00, 0xC0, 0x00, 0x23, 0x80, 0x80, 0x00, 0x00, 0x00, 0xC0, 0x00, 0x23, 0x00, 0x80, 0x00, 0x00, 0x00, 0xC0, 0x00, 0x23, 0xC0, 0x80, 0x00, 0x00, 0x10, 0xC0, 0x00, 0x22, 0x00, 0x80, 0x00, 0x00, 0x00, 0x08, 0x80, 0xDC, 0xE0, 0x0C, 0x00, 0xDC, 0xDC, 0xC0, 0x00, 0x20, 0x00, 0x80, 0x00, 0x00, 0x01, 0x0D, 0x00, 0xF4, 0x62, 0xC0, 0x00, 0x20, 0x00, 0x80, 0x00, 0x00, 0x00, 0x0D, 0x00, 0xF4, 0x62, 0xC0, 0x00, 0x20, 0x00, 0x80, 0x00, 0x00, 0x00, 0x0D, 0x00, 0xFF, 0xD1, 0x00, 0x00, 0x00, 0x03, 0x0D, 0x00, 0xFF, 0xD2, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x01, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, </Data>
+        </Program>
+        <Register>
+            <Name>DM0 Data</Name>
+            <Address>0</Address>
+            <AddrIncr>4</AddrIncr>
+            <Size>80</Size>
+            <Data>0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>DM1 Data</Name>
+            <Address>24576</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>16</Size>
+            <Data>0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.KILL_CORE</Name>
+            <Address>62467</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.START_ADDRESS</Name>
+            <Address>62468</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.START_PULSE</Name>
+            <Address>62465</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x03, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.START_CORE</Name>
+            <Address>62466</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x00, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.START_CORE</Name>
+            <Address>62466</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.Start Delay</Name>
+            <Address>0</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x01, </Data>
+        </Register>
+        <Register>
+            <Name>IC 1.HIBERNATE</Name>
+            <Address>62464</Address>
+            <AddrIncr>0</AddrIncr>
+            <Size>2</Size>
+            <Data>0x00, 0x00, </Data>
+        </Register>
+    </IC>
+</Schematic>

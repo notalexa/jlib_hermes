@@ -1,19 +1,25 @@
 
+plugins {
+    // Apply the java-library plugin for API and implementation separation.
+    id 'application'
+}
+
 dependencies {
-	implementation project(':lib')
-	implementation project(':tts')
+	implementation project(':media')
+	
 	implementation group: 'not.alexa', name: 'jlib-netobjects', version: '0.9.1'
-	implementation group: 'org.jcraft', name: 'jorbis', version: '0.0.17'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.14.2'
-	implementation group: 'com.badlogicgames.jlayer', name: 'jlayer', version: '1.0.2-gdx'
-	implementation group: 'org.jetbrains', name: 'annotations', version: '24.0.1'
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.9'
+
+	// Need Stylesheet version 2.0
+	runtimeOnly group: 'net.sf.saxon', name: 'Saxon-HE', version: '12.5'
+	implementation group: 'not.alexa', name: 'jlib-netobjects-jackson', version: '0.9.1'
 }
 
 publishing {
 	publications {
         mavenJava(MavenPublication) {
-            artifactId = 'jlib-hermes-media'
+            artifactId = 'jlib-hermes-media-dsp'
             groupId = 'not.alexa'
             version = '0.9.1'
             from components.java
@@ -27,4 +33,8 @@ publishing {
         	url 'file://'+System.getProperty('user.home')+'/maven-repo'
         }
     }
+}
+
+application {
+    mainClass = 'not.alexa.hermes.media.streams.dsp.DSP'
 }

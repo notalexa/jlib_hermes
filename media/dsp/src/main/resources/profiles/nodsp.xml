@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile chip="ADAU1451">
+  <program target="IC 1" checksum="08 4B B5 45 1B 86 AF 72 4E 29 D1 80 71 E3 40 2F">
+    <metadata/>
+    <action type="poke" addr="63632" name="IC 1.SOFT_RESET">00 00</action>
+    <action type="poke" addr="63632" name="IC 1.SOFT_RESET">00 01</action>
+    <action type="delay" addr="0">00 FF</action>
+    <action type="poke" addr="62464" name="IC 1.HIBERNATE">00 00</action>
+    <action type="poke" addr="62464" name="IC 1.HIBERNATE">00 01</action>
+    <action type="delay" addr="0">00 FF</action>
+    <action type="poke" addr="62467" name="IC 1.KILL_CORE">00 00</action>
+    <action type="poke" addr="62467" name="IC 1.KILL_CORE">00 01</action>
+    <action type="poke" addr="61443" name="IC 1.PLL_ENABLE">00 00</action>
+    <action type="poke" addr="61440" name="IC 1.PLL_CTRL0 Register">00 60</action>
+    <action type="poke" addr="61441" name="IC 1.PLL_CTRL1 Register">00 02</action>
+    <action type="poke" addr="61442" name="IC 1.PLL_CLK_SRC Register">00 01</action>
+    <action type="poke" addr="61445" name="IC 1.MCLK_OUT Register">00 03</action>
+    <action type="poke" addr="61443" name="IC 1.PLL_ENABLE Register">00 01</action>
+    <action type="delay" addr="0">00 FF</action>
+    <action type="poke" addr="61520" name="IC 1.POWER_ENABLE0 Register">1F FF</action>
+    <action type="poke" addr="61521" name="IC 1.POWER_ENABLE1 Register">00 1F</action>
+    <action type="poke" addr="62849" name="IC 1.ASRC_MUTE">06 FC</action>
+    <action type="poke" addr="62742" name="IC 1.MP6_MODE">00 07</action>
+    <action type="poke" addr="62743" name="IC 1.MP7_MODE">00 07</action>
+    <action type="poke" addr="62744" name="IC 1.MP8_MODE">00 0C</action>
+    <action type="poke" addr="62745" name="IC 1.MP9_MODE">00 70</action>
+    <action type="poke" addr="62758" name="IC 1.MP6_WRITE">00 01</action>
+    <action type="poke" addr="62759" name="IC 1.MP7_WRITE">00 01</action>
+    <action type="poke" addr="63367" name="IC 1.BCLK_OUT3_PIN">00 1B</action>
+    <action type="poke" addr="63380" name="IC 1.SDATA_OUT0_PIN">00 18</action>
+    <action type="poke" addr="63381" name="IC 1.SDATA_OUT1_PIN">00 18</action>
+    <action type="poke" addr="63382" name="IC 1.SDATA_OUT2_PIN">00 18</action>
+    <action type="poke" addr="63383" name="IC 1.SDATA_OUT3_PIN">00 18</action>
+    <action type="poke" addr="63384" name="IC 1.SPDIF_TX_PIN">00 18</action>
+    <action type="poke" addr="63385" name="IC 1.SCLK_SCL_PIN">00 0A</action>
+    <action type="poke" addr="63387" name="IC 1.SS_PIN">00 08</action>
+    <action type="poke" addr="63388" name="IC 1.MOSI_ADDR1_PIN">00 08</action>
+    <action type="poke" addr="63389" name="IC 1.SCLK_SCL_M_PIN">00 18</action>
+    <action type="poke" addr="63390" name="IC 1.MISO_SDA_M_PIN">00 18</action>
+    <action type="poke" addr="63392" name="IC 1.MOSI_M_PIN">00 0F</action>
+    <action type="poke" addr="63395" name="IC 1.CLKOUT_PIN">00 1F</action>
+    <action type="poke" addr="61697" name="IC 1.ASRC_INPUT1">00 40</action>
+    <action type="poke" addr="61760" name="IC 1.ASRC_OUT_RATE0">00 06</action>
+    <action type="poke" addr="61761" name="IC 1.ASRC_OUT_RATE1">00 06</action>
+    <action type="poke" addr="61766" name="IC 1.ASRC_OUT_RATE6">00 06</action>
+    <action type="poke" addr="61767" name="IC 1.ASRC_OUT_RATE7">00 06</action>
+    <action type="poke" addr="61824" name="IC 1.SOUT_SOURCE0">00 31</action>
+    <action type="poke" addr="61825" name="IC 1.SOUT_SOURCE1">00 31</action>
+    <action type="poke" addr="61826" name="IC 1.SOUT_SOURCE2">00 01</action>
+    <action type="poke" addr="61827" name="IC 1.SOUT_SOURCE3">00 01</action>
+    <action type="poke" addr="61828" name="IC 1.SOUT_SOURCE4">00 01</action>
+    <action type="poke" addr="61829" name="IC 1.SOUT_SOURCE5">00 01</action>
+    <action type="poke" addr="61830" name="IC 1.SOUT_SOURCE6">00 01</action>
+    <action type="poke" addr="61831" name="IC 1.SOUT_SOURCE7">00 01</action>
+    <action type="poke" addr="61832" name="IC 1.SOUT_SOURCE8">00 3A</action>
+    <action type="poke" addr="61833" name="IC 1.SOUT_SOURCE9">00 02</action>
+    <action type="poke" addr="61834" name="IC 1.SOUT_SOURCE10">00 02</action>
+    <action type="poke" addr="61835" name="IC 1.SOUT_SOURCE11">00 02</action>
+    <action type="poke" addr="61836" name="IC 1.SOUT_SOURCE12">00 02</action>
+    <action type="poke" addr="61837" name="IC 1.SOUT_SOURCE13">00 02</action>
+    <action type="poke" addr="61838" name="IC 1.SOUT_SOURCE14">00 02</action>
+    <action type="poke" addr="61839" name="IC 1.SOUT_SOURCE15">00 02</action>
+    <action type="poke" addr="61840" name="IC 1.SOUT_SOURCE16">00 02</action>
+    <action type="poke" addr="61841" name="IC 1.SOUT_SOURCE17">00 02</action>
+    <action type="poke" addr="61842" name="IC 1.SOUT_SOURCE18">00 02</action>
+    <action type="poke" addr="61843" name="IC 1.SOUT_SOURCE19">00 02</action>
+    <action type="poke" addr="61844" name="IC 1.SOUT_SOURCE20">00 3B</action>
+    <action type="poke" addr="61845" name="IC 1.SOUT_SOURCE21">00 3B</action>
+    <action type="poke" addr="61846" name="IC 1.SOUT_SOURCE22">00 02</action>
+    <action type="poke" addr="61847" name="IC 1.SOUT_SOURCE23">00 02</action>
+    <action type="poke" addr="61888" name="IC 1.SPDIFTX_INPUT">00 02</action>
+    <action type="poke" addr="61952" name="IC 1.SERIAL_BYTE_0_0">00 40</action>
+    <action type="poke" addr="61956" name="IC 1.SERIAL_BYTE_1_0">00 40</action>
+    <action type="poke" addr="61960" name="IC 1.SERIAL_BYTE_2_0">48 00</action>
+    <action type="poke" addr="61964" name="IC 1.SERIAL_BYTE_3_0">6C 00</action>
+    <action type="poke" addr="61968" name="IC 1.SERIAL_BYTE_4_0">00 40</action>
+    <action type="poke" addr="61969" name="IC 1.SERIAL_BYTE_4_1">00 22</action>
+    <action type="poke" addr="61972" name="IC 1.SERIAL_BYTE_5_0">00 40</action>
+    <action type="poke" addr="61973" name="IC 1.SERIAL_BYTE_5_1">00 22</action>
+    <action type="poke" addr="61976" name="IC 1.SERIAL_BYTE_6_0">00 40</action>
+    <action type="poke" addr="61977" name="IC 1.SERIAL_BYTE_6_1">00 22</action>
+    <action type="poke" addr="61980" name="IC 1.SERIAL_BYTE_7_0">00 40</action>
+    <action type="poke" addr="61981" name="IC 1.SERIAL_BYTE_7_1">00 22</action>
+    <action type="poke" addr="62980" name="IC 1.SPDIF_RESTART">00 01</action>
+    <action type="poke" addr="49152" name="Program Data">00 00 00 02 0C 00 DC DC 0D 00 FF D2 0D 00 FF D0 0D 00 F4 50 0D 00 F4 00 C0 00 23 80 80 00 00 00 C0 00 23 00 80 00 00 00 C0 00 23 C0 80 00 00 10 C0 00 22 00 80 00 00 00 08 80 DC E0 0C 00 DC DC C0 00 20 00 80 00 00 01 0D 00 F4 62 C0 00 20 00 80 00 00 00 0D 00 F4 62 C0 00 20 00 80 00 00 00 0D 00 FF D1 00 00 00 03 0D 00 FF D2 00 00 00 05 00 00 00 00 00 00 00 00 02 01 00 1B 00 00 00 00 00 00 00 00</action>
+    <action type="poke" addr="0" name="DM0 Data">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</action>
+    <action type="poke" addr="24576" name="DM1 Data">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</action>
+    <action type="poke" addr="62467" name="IC 1.KILL_CORE">00 00</action>
+    <action type="poke" addr="62468" name="IC 1.START_ADDRESS">00 00</action>
+    <action type="poke" addr="62465" name="IC 1.START_PULSE">00 03</action>
+    <action type="poke" addr="62466" name="IC 1.START_CORE">00 00</action>
+    <action type="poke" addr="62466" name="IC 1.START_CORE">00 01</action>
+    <action type="delay" addr="0">00 01</action>
+    <action type="poke" addr="62464" name="IC 1.HIBERNATE">00 00</action>
+  </program>
+</profile>
+
