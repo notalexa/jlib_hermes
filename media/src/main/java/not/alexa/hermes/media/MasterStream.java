@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 
 /**
  * The link between {@link AudioStream} and {@link AudioSink}. The master is created using the {@link AudioStream#createControls(AudioSink)} method and
@@ -26,7 +28,7 @@ import javax.sound.sampled.AudioFormat;
  * 
  * @author notalexa
  */
-public class MasterStream implements AudioControls {
+public class MasterStream implements AudioControls, LineListener {
 	private AudioStream stream;
 	private AudioFormat format;
 	private AudioSink sink;
@@ -100,6 +102,13 @@ public class MasterStream implements AudioControls {
 		this.format=stream.getFormat();
 	}
 	
+	@Override
+	public void update(LineEvent e) {
+		if(stream!=null) {
+			stream.update(e);
+		}
+	}
+	
 	public MasterStream attach(AudioSink sink) {
 		this.sink=sink;
 		normalizedVolume=sink.getVolume();
@@ -165,6 +174,10 @@ public class MasterStream implements AudioControls {
 				stream.onAudioStateChanged();
 			}
 		}
+	}
+	
+	public boolean hasSecondaries() {
+		return secondaryLines.hasStreams();
 	}
 	
 	@Override

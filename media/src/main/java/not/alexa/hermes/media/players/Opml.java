@@ -33,7 +33,10 @@ class Opml {
 	}
 	
 	public static String getUrl(String id) {
-		return "http://opml.radiotime.com/Tune.ashx?id="+id;
+		if(id.startsWith("tunein://")) {
+			id=id.substring("tunein://".length());
+		}
+		return "http://opml.radiotime.com/Tune.ashx?id="+id.replace('?','&');
 	}
 	
 	public static String getDescriptionUrl(String id) {

@@ -124,6 +124,15 @@ public class MP3AudioStream implements AudioStream {
 	        }
 		}
     }
+    
+	/**
+	 * Decorate the format (e.g. add a profile). This default to noop.
+	 * @param format the format to decorate
+	 * @return the decorated format
+	 */
+    protected AudioFormat decorate(AudioFormat format) {
+    	return format;
+    }
 
     private class MP3InputStream extends InputStream {
         private final static int MAX_READ_SIZE = 96 * 1024;
@@ -158,7 +167,7 @@ public class MP3AudioStream implements AudioStream {
             frameTime=header.ms_per_frame();
             duration=size>0?header.total_ms((int)size):-1;
             bitstream.unreadFrame();
-            audioFormat=new AudioFormat(header.getSampleRate(), 16, header.mode() == Header.SINGLE_CHANNEL ? 1 : 2, true, false);
+            audioFormat=decorate(new AudioFormat(header.getSampleRate(), 16, header.mode() == Header.SINGLE_CHANNEL ? 1 : 2, true, false));
             outputBuffer = new OutputBuffer(audioFormat.getChannels(), false);
             decoder.setOutputBuffer(outputBuffer);
             outputBuffer.setReplayGainScale(normalisationPregain);

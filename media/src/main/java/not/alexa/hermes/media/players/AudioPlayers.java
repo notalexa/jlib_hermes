@@ -16,10 +16,10 @@
 package not.alexa.hermes.media.players;
 
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.LineEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,6 +153,18 @@ public class AudioPlayers extends AbstractPlayer<Void> {
 	}
 	
 	@Override
+	public void update(LineEvent event) {
+		if(currentPlayer!=null) {
+			currentPlayer.update(event);
+		}
+	}
+	
+	@Override
+	public final AudioFormat getFormat() {
+		return getStreamFormat();
+	}
+	
+	@Override
 	public boolean play(String uri) {
 		AudioPlayer selected=null;
 		int score=Integer.MAX_VALUE;
@@ -165,7 +177,7 @@ public class AudioPlayers extends AbstractPlayer<Void> {
 		}
 		if(selected==null&&ignore!=null&&ignore.asPredicate().test(uri)) {
 			LOGGER.info("Uri {} ignored.",uri);
-			return currentPlayer!=null;
+			return false;
 		}
 		if(selected!=currentPlayer) {
 			if(currentPlayer!=null) {
@@ -270,21 +282,7 @@ public class AudioPlayers extends AbstractPlayer<Void> {
 	@Override
 	public void repeatAlbum(boolean repeat) {
 		if(currentPlayer!=null) {
-			currentPlayer.repeatAlbum/*
-			 * Copyright (C) 2024 Not Alexa
-			 *
-			 * Licensed under the Apache License, Version 2.0 (the "License");
-			 * you may not use this file except in compliance with the License.
-			 * You may obtain a copy of the License at
-			 *
-			 *      http://www.apache.org/licenses/LICENSE-2.0
-			 *
-			 * Unless required by applicable law or agreed to in writing, software
-			 * distributed under the License is distributed on an "AS IS" BASIS,
-			 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-			 * See the License for the specific language governing permissions and
-			 * limitations under the License.
-			 */(repeat);
+			currentPlayer.repeatAlbum(repeat);
 		}
 	}
 

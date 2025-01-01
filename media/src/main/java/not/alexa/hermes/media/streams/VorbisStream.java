@@ -80,7 +80,7 @@ public class VorbisStream implements AudioStream {
 		this.fileSize=size;
 		if(fillBuffer(nextAudioPacket())) {
 			this.info=info.forNormalizationData(gain, peak);
-			format=new AudioFormat(jorbisInfo.rate,16, jorbisInfo.channels, true, false);
+			format=decorate(new AudioFormat(jorbisInfo.rate,16, jorbisInfo.channels, true, false));
 		} else {
 			throw new IOException("Not a Vorbis stream");
 		}
@@ -91,6 +91,15 @@ public class VorbisStream implements AudioStream {
 		return info.forPosition(time());
 	}
 	
+	/**
+	 * Decorate the format (e.g. add a profile). This default to noop.
+	 * @param format the format to decorate
+	 * @return the decorated format
+	 */
+    protected AudioFormat decorate(AudioFormat format) {
+    	return format;
+    }
+
 	protected float time() {
 		return ((float)frame)/((float)jorbisInfo.rate);
 	}

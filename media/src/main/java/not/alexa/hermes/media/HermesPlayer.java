@@ -41,7 +41,9 @@ import not.alexa.hermes.media.AudioSink.Listener;
 import not.alexa.hermes.media.AudioStream.AudioInfo;
 import not.alexa.hermes.media.AudioStream.AudioStreamListener;
 import not.alexa.hermes.media.streams.PrePostSilence;
+import not.alexa.hermes.media.streams.SourceDataLineDecorator;
 import not.alexa.hermes.media.streams.WavAudioStream;
+import not.alexa.hermes.mqtt.HermesServer;
 import not.alexa.hermes.nlu.NLUIntent;
 import not.alexa.hermes.tts.Say;
 import not.alexa.netobjects.BaseException;
@@ -64,6 +66,7 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 	@JsonProperty(defaultValue="false") boolean publishState;
 	@JsonProperty(required = true) AudioPlayer player;
 	@JsonProperty(defaultValue="0.5f") float initialVolume=0.5f;
+	@JsonProperty SourceDataLineDecorator profiler;
 	
 	private AudioControls controls;
 	private boolean audioPlay=true;
@@ -107,12 +110,16 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 				executor.execute(Commands.Play.decorate(()->{
 					Slot source=intent.getSlot("source");
 					if(source!=null) {
-						player.play(source.getValue());
+						if(player.play(source.getValue())) {
+							controls.resume();
+						}
 					} else if(!player.hasAudio()) try {
+						LOGGER.info("No music playable");
 						api.publish(new Say("Ich hab keine Musik in der Rille"));
 					} catch(Throwable t) {
+					} else {
+						controls.resume();
 					}
-					controls.resume();
 				}));
 			} else if("pause".equals(cmd)||"turnoff".equals(cmd)) {
 				executor.execute(Commands.Play.decorate(()->{
@@ -256,7 +263,10 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 			} else if("state".equals(cmd)) {
 				executor.execute(Commands.State.decorate(()->{
 					try {
-						new StateMessage(api.getSiteId(), player.getState()).publish(api);
+						PlayerState state=player.getState();
+						if(state!=null) {
+							new StateMessage(api.getSiteId(), player.getState()).publish(api);
+						}
 					} catch(Throwable t) {
 						LOGGER.error("Failed to publish state",t);
 					}
@@ -276,6 +286,7 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 		public AudioPlayBytesHandler() {
 		}
 
+		@SuppressWarnings("resource")
 		@Override
 		public void received(HermesApi api) throws BaseException {
 			if(controls!=null&&audioPlay) {
@@ -334,7 +345,7 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 				}
 			}
 		});
-		controls=player.createControls(new AudioSink(initialVolume,this));
+		controls=player.createControls(new AudioSink(initialVolume,profiler,this));
 		player.startup(context);
 	}
 

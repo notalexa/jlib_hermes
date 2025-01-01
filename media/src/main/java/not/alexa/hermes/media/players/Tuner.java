@@ -31,6 +31,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import javax.sound.sampled.AudioFormat;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,8 +146,7 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 			return currentEntry==null?null:new StreamEntry(currentEntry.url);
 		}
 		if(uri.startsWith("tunein://")) {
-			String id=uri.substring("tunein://".length());
-			return new TuneInEntry(id);
+			return new TuneInEntry(uri);
 		} else if(resolveTunerUrls&&uri.startsWith("tuner://")) {
 			return resolveUrl(urls==null?errorURL:urls.getOrDefault(uri.substring("tuner://".length()),errorURL),false);
 		} else if(uri.indexOf("://")>0) {
@@ -174,6 +175,9 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 		if(forwardList.size()>0) {
 			StreamEntry entry=forwardList.removeFirst();
 			play(entry);
+		} else if(currentEntry!=null) {
+			LOGGER.info("Requested next track. Play current.");
+			play(currentEntry);
 		}
 	}
 	
@@ -195,10 +199,38 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 
 	public class StreamEntry implements Runnable {
 		protected String url;
+		protected String profile=Tuner.this.profile;
 		protected int delay=125;
 		
 		protected StreamEntry(String url) {
 			this.url=url;
+			int p=url.indexOf('?');
+			if(p>0) {
+				String query=url.substring(p+1);
+				StringBuilder reducedQuery=new StringBuilder();
+				while(query.length()>0) {
+					int q=query.indexOf('&');
+					if(query.startsWith("profile=")) {
+						profile=query.substring("profile=".length(),q>0?q:query.length());
+					} else {
+						if(reducedQuery.length()>0) {
+							reducedQuery.append('&');
+						}
+						reducedQuery.append(query.substring(0, q>0?q:query.length()));
+					}
+					if(q>0) {
+						query=query.substring(q+1);
+					} else {
+						query="";
+					}
+				}
+				if(reducedQuery.length()>0) {
+					this.url=url.substring(0,p+1)+reducedQuery;
+				} else {
+					this.url=url.substring(0,p);
+				}
+			}
+			LOGGER.info("URL {} resolved to ({},{})",url,this.url,profile);
 		}
 		
 		public void reopen(Throwable cause) {
@@ -241,7 +273,7 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 			}
 			return new MP3AudioStream(new FilterInputStream(con.getInputStream()) {
 				boolean closed;
-					@Override
+				@Override
 				public void close() throws IOException {
 					if(!closed) try {
 						closed=true;
@@ -278,6 +310,11 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 					}
 				}
 			},getClass().getSimpleName(),1f,con.getContentLengthLong()) {
+
+				@Override
+				protected AudioFormat decorate(AudioFormat format) {
+					return Tuner.this.forProfile(profile,format);
+				}
 
 				@Override
 				protected boolean handleEOS(ByteBuffer buffer) {
@@ -331,6 +368,12 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 		long infoTime;
 		protected TuneInEntry(String id) {
 			super(Opml.getUrl(id));
+			if(id.startsWith("tunein://")) {
+				id=id.substring("tunein://".length());
+			}
+			if(id.indexOf('&')>0) {
+				id=id.substring(0, id.indexOf('&'));
+			}
 			this.id=id;
 		}
 		

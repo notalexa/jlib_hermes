@@ -17,12 +17,16 @@ package not.alexa.hermes.media.players;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.LineEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import not.alexa.hermes.media.AudioControls;
 import not.alexa.hermes.media.AudioPlayer;
@@ -38,8 +42,10 @@ import not.alexa.hermes.media.streams.Silence;
  * @param <T> the type of the history entry
  */
 public abstract class AbstractPlayer<T> implements AudioPlayer {
+	@JsonProperty protected String profile;
 	protected static Logger LOGGER=LoggerFactory.getLogger(AudioPlayer.class);
 	private AudioStream currentStream=new Silence();
+	private AudioFormat currentFormat=currentStream.getFormat();
 	protected List<AudioStreamListener> listeners=new ArrayList<>();
 	protected PlayHistory<T> history=new PlayHistory<>(100);
 	protected AudioControls controls;
@@ -48,6 +54,24 @@ public abstract class AbstractPlayer<T> implements AudioPlayer {
 
 	public AbstractPlayer() {
 		state.capabilities=PlayerState.TURN_ON_OFF|PlayerState.PAUSE_RESUME|PlayerState.VOLUME;
+	}
+	
+	@Override
+	public void update(LineEvent event) {
+		if(currentStream!=null) {
+			currentStream.update(event);
+		}
+	}
+	
+	protected AudioFormat forProfile(AudioFormat format) {
+		return forProfile(profile,format);
+	}
+	
+	protected AudioFormat forProfile(String profile,AudioFormat format) {
+		if(profile!=null&&format.getProperty("profile")==null) {
+			format=new AudioFormat(format.getEncoding(), format.getSampleRate(), format.getSampleSizeInBits(),format.getChannels(), format.getFrameSize(), format.getFrameRate(), format.isBigEndian(), Collections.singletonMap("profile", profile));
+		}
+		return format;
 	}
 
 	public void setAudioControls(AudioControls controls) {
@@ -58,10 +82,16 @@ public abstract class AbstractPlayer<T> implements AudioPlayer {
 	@Override
 	public AudioFormat getFormat() {
 		synchronized(controls.getStreamLock()) {
+			return currentFormat;
+		}
+	}
+
+	public AudioFormat getStreamFormat() {
+		synchronized(controls.getStreamLock()) {
 			return currentStream.getFormat();
 		}
 	}
-	
+
 	protected void play(AudioStream stream) {
 		boolean fireEvent=false;
 		synchronized(controls.getStreamLock()) {
@@ -72,9 +102,10 @@ public abstract class AbstractPlayer<T> implements AudioPlayer {
 					currentStream.close();
 				}
 				this.currentStream=stream;
+				this.currentFormat=forProfile(currentStream.getFormat());
 				fireEvent=true;
 				if(controls!=null) {
-					controls.onAudioFormatChanged(stream.getFormat());
+					controls.onAudioFormatChanged(currentFormat);
 				}
 			}
 		}
@@ -105,7 +136,7 @@ public abstract class AbstractPlayer<T> implements AudioPlayer {
 			currentStream.close();
 		} catch(Throwable t) {
 		}
-		currentStream=new Silence(currentStream.getFormat());
+		currentStream=new Silence(currentFormat);
 		nextTrack();
 		return Integer.MAX_VALUE-1;
 	}

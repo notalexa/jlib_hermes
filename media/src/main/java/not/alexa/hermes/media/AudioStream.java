@@ -20,6 +20,8 @@ import java.io.InputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -31,7 +33,7 @@ import not.alexa.hermes.media.streams.VorbisStream;
  * 
  * @author notalexa
  */
-public interface AudioStream extends AutoCloseable {
+public interface AudioStream extends AutoCloseable, LineListener {
 	
 	/**
 	 * Set the audio controls for this stream. Typically, a stream is interested in audio controls if it's a player but others may be interested too.
@@ -45,6 +47,14 @@ public interface AudioStream extends AutoCloseable {
 	 * Called, if some parameters (like volume) changed.
 	 */
 	public default void onAudioStateChanged() {
+	}
+	
+	
+	/**
+	 * Do nothing
+	 */
+	@Override
+	public default void update(LineEvent event) {
 	}
 	/**
 	 * 
@@ -93,6 +103,11 @@ public interface AudioStream extends AutoCloseable {
 						fill();
 					}
 					
+					@Override
+					public void update(LineEvent event) {
+						AudioStream.this.update(event);
+					}
+
 					private void fill() throws IOException {
 						int c1=accu[0].length;
 						int c2=baseStream.getFormat().getChannels();

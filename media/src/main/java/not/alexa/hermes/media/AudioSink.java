@@ -22,8 +22,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
@@ -32,10 +35,14 @@ import javax.sound.sampled.SourceDataLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import not.alexa.hermes.media.streams.SourceDataLineDecorator;
+
 /**
  * Audio sink consuming data from a {@link MasterStream}.
  */
 public class AudioSink implements Runnable, AutoCloseable {
+	public static final BooleanControl.Type MIXINS=new BooleanControl.Type("MIXINS") {};
+	
 	private static final Logger LOGGER=LoggerFactory.getLogger(AudioSink.class);
 	private static final int RELEASE_DELAY=5;
 	private static final int BUFFER_SIZE=0x800;	
@@ -60,23 +67,28 @@ public class AudioSink implements Runnable, AutoCloseable {
     protected volatile boolean paused = true;
     private float volume;
     private boolean mixerLogged;
+    private SourceDataLineDecorator lineDecorator;
 
     /**
      * Creates a new sink with the given listener and sets the initial volume.
      */
-    public AudioSink(float initialVolume,Listener listener) {
+    public AudioSink(float initialVolume,SourceDataLineDecorator lineDecorator,Listener listener) {
         this.listener = listener==null?new Listener() {
 			@Override
 			public void sinkError(Throwable t) {
 				AudioSink.this.sinkError(t);
 			}
         }:listener;
+        this.lineDecorator=lineDecorator;
         setVolume(initialVolume);
     }
     
 	AudioControls attach(MasterStream stream) {
 		if(this.stream!=null) {
 			this.stream.detach();
+		}
+		if(lineDecorator!=null) {
+			lineDecorator.init(this,stream);
 		}
 		this.stream=stream.attach(this);
 		return this.stream;
@@ -92,6 +104,10 @@ public class AudioSink implements Runnable, AutoCloseable {
     		(thread = new Thread(this, "player-audio-sink")).start();
     	}
         paused = false;
+        BooleanControl muteControl=output==null||!output.isControlSupported(BooleanControl.Type.MUTE)?null:(BooleanControl)output.getControl(BooleanControl.Type.MUTE);
+        if(muteControl!=null) {
+        	muteControl.setValue(false);
+        }
         pauseCount++;
         synchronized (pauseLock) {
             pauseLock.notifyAll();
@@ -112,6 +128,10 @@ public class AudioSink implements Runnable, AutoCloseable {
      */
     public void pause() {
         paused = true;
+        BooleanControl muteControl=output==null||!output.isControlSupported(BooleanControl.Type.MUTE)?null:(BooleanControl)output.getControl(BooleanControl.Type.MUTE);
+        if(muteControl!=null) {
+        	muteControl.setValue(true);
+        }
         int c=++pauseCount;
         scheduler.schedule(() -> {
         	if(paused&&c==pauseCount) {
@@ -172,6 +192,7 @@ public class AudioSink implements Runnable, AutoCloseable {
 	        int bytes=0;
 	        CheckPoint checkPoint=new CheckPoint();
 	        AudioFormat  currentFormat=null;
+	        BooleanControl mixinsControl=null;
 	        while (!closed) {
 	            if (paused) {
 	            	if(output!=null) {
@@ -190,12 +211,18 @@ public class AudioSink implements Runnable, AutoCloseable {
 	                    if(currentFormat==null) {
 	                    	currentFormat=stream.getFormat();
 	                        if(start(stream.getFormat())) {
+	                        	if(output.isControlSupported(MIXINS)) {
+	                        		mixinsControl=(BooleanControl)output.getControl(MIXINS);
+	                        	}
 		                        time=System.currentTimeMillis();
 		                        checkPoint.update(currentFormat);
 	                        } else if(output==null) {
 	                        	pause();
 	                        	continue;
 	                        }
+	                    }
+	                    if(mixinsControl!=null) {
+	                    	mixinsControl.setValue(stream.hasSecondaries());
 	                    }
 	                    int count = stream.read(currentFormat,buffer,0,buffer.length);
 	                    if(count>=0) {
@@ -206,6 +233,7 @@ public class AudioSink implements Runnable, AutoCloseable {
 	                    		return;
 	                    	}
 	                    } else {
+                    		LOGGER.info("Terminate current play with count {}",count);
 	                    	output.drain();
 	                    	if(count==-2) {
 	                    		currentFormat=null;
@@ -213,7 +241,6 @@ public class AudioSink implements Runnable, AutoCloseable {
 		                    	LOGGER.info("Played {}ms ({} bytes).",(System.currentTimeMillis()-time),bytes);
 		                    	pause();
 	                    	}
-	                    	//notifyStreamFinished();
 	                    }
 	                } catch (Throwable t) {
 	                    if (closed) {
@@ -240,8 +267,17 @@ public class AudioSink implements Runnable, AutoCloseable {
         void sinkError(Throwable t);
     }
     
+    private void closeLine(SourceDataLine line) {
+		line.stop();
+		line.flush();
+		line.close();
+		if(lineDecorator!=null) {
+			lineDecorator.dispose(line);
+		}
+    }
+    
     protected boolean start(AudioFormat format) {
-        try {
+       try {
             if(acquireLine(format)) {
             	output.start();
             }
@@ -254,9 +290,7 @@ public class AudioSink implements Runnable, AutoCloseable {
     private boolean acquireLine(AudioFormat format) throws LineUnavailableException {
         if (output == null || !output.getFormat().matches(format)||!output.isOpen()) {
         	if(output!=null) try {
-        		output.stop();
-        		output.flush();
-        		output.close();
+        		closeLine(output);
         	} finally {
         		output=null;
         	}
@@ -268,9 +302,22 @@ public class AudioSink implements Runnable, AutoCloseable {
             for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
                 Mixer mixer = AudioSystem.getMixer(mixerInfo);
                 if (mixer.isLineSupported(info)) {
-                	output=(SourceDataLine)mixer.getLine(info);
+                	SourceDataLine out=(SourceDataLine)mixer.getLine(info);
                 	LOGGER.info("Use mixer {} for format {}.",mixer.getMixerInfo(),format);
-                	output.open();
+                	if(lineDecorator!=null) {
+                		out=lineDecorator.decorate(out);
+                	}
+                	output=out;
+                	SourceDataLine lineRef=out;
+                	output.addLineListener(new LineListener() {
+						@Override
+						public void update(LineEvent event) {
+							if(output==lineRef) {
+								stream.update(event);
+							}
+						}
+					});
+                	output.open(format);
                 	setVolume(volume);
                 	break;
                 }
