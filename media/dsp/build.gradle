@@ -13,7 +13,6 @@ dependencies {
 
 	// Need Stylesheet version 2.0
 	runtimeOnly group: 'net.sf.saxon', name: 'Saxon-HE', version: '12.5'
-	implementation group: 'not.alexa', name: 'jlib-netobjects-jackson', version: '0.9.1'
 }
 
 publishing {

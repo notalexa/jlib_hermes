@@ -39,6 +39,7 @@ import not.alexa.netobjects.api.Overlay;
  */
 public class Stack implements HermesComponent {
 	@JsonProperty(defaultValue = "true") boolean active;
+	@JsonProperty(defaultValue = "true") boolean acceptWildcard;
 	@JsonProperty IntentHandler[] handlers;
 	
 	protected Stack() {
@@ -161,7 +162,8 @@ public class Stack implements HermesComponent {
 	
 	/**
 	 * Handler for incoming {@link NLUIntent} requests.
-	 * This handler delegates to {@link Stack#onIntentReceived(HermesApi, NLUIntent)}.
+	 * This handler delegates to {@link Stack#onIntentReceived(HermesApi, NLUIntent)} if the siteId matches or the siteId is <code>*</code> and
+	 * wildcards are accepted and the messagetimestamp is not older than a minute. 
 	 * 
 	 * @author notalexa
 	 *
@@ -175,7 +177,7 @@ public class Stack implements HermesComponent {
 
 		@Override
 		public void received(HermesApi api) throws BaseException {
-			if(api.matches(getSiteId())) {
+			if((api.matches(getSiteId())||(acceptWildcard&&"*".equals(getSiteId())))&&timestamp>System.currentTimeMillis()-60000) {
 				onIntentReceived(api,this);
 			}
 		}

@@ -31,6 +31,7 @@ import not.alexa.hermes.HermesApi.Slot;
 
 public class NLUIntent implements HermesMessage<NLUIntent>, RequestAnswer {
 
+	@JsonProperty(required = true) protected long timestamp;
 	@JsonProperty(required = true) protected String input;
 	@JsonProperty(required = true) protected Intent intent;
 	@JsonProperty(required = true) protected Slot[] slots;
@@ -47,6 +48,10 @@ public class NLUIntent implements HermesMessage<NLUIntent>, RequestAnswer {
 	}
 	
 	protected NLUIntent() {
+	}
+	
+	public long getTimestamp() {
+		return timestamp;
 	}
 
 	@Override
@@ -104,10 +109,14 @@ public class NLUIntent implements HermesMessage<NLUIntent>, RequestAnswer {
 		return asrConfidence;
 	}
 	
-	public void reply(HermesApi api,String text) throws BaseException {
+	public void reply(HermesApi api, String text) throws BaseException {
+		reply(api,true,text);
+	}
+	
+	public void reply(HermesApi api,boolean senderSupportsAudio,String text) throws BaseException {
 		Slot replyTo=getSlot("reply-to");
 		if(replyTo!=null) {
-			new Reply(api.getSiteId(),replyTo.getValue(),text).publish(api);
+			new Reply(api.getSiteId(),replyTo.getValue(),senderSupportsAudio,text).publish(api);
 		} else {
 			new Say(api.getSiteId(),text).publish(api);
 		}
@@ -121,8 +130,15 @@ public class NLUIntent implements HermesMessage<NLUIntent>, RequestAnswer {
 			answer.sessionId="";
 			answer.customData="";
 		}
+		
+		private long timestamp=-1;
 
 		private List<Slot> slots=new ArrayList<>();
+
+		public Builder setTimestamp(long timestamp) {
+			answer.timestamp = timestamp;
+			return this;
+		}
 
 		public Builder setInput(String input) {
 			answer.input = input;
@@ -191,6 +207,11 @@ public class NLUIntent implements HermesMessage<NLUIntent>, RequestAnswer {
 			NLUIntent result=answer;
 			try {
 				answer=(NLUIntent)answer.clone();
+				if(timestamp>=0) {
+					result.timestamp=timestamp;
+				} else {
+					result.timestamp=System.currentTimeMillis();
+				}
 			} catch(Throwable t) {
 			}
 			return result;
