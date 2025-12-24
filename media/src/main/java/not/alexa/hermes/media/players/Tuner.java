@@ -243,8 +243,12 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 		
 		public void run() {
 			if(currentEntry==this) {
-				LOGGER.info("Reopen url {}",url);
-				play(true,this);
+				if(Tuner.this.controls.isActive()) {
+					LOGGER.info("Reopen url {}",url);
+					play(true,this);
+				} else {
+					LOGGER.info("Not active. Close "+currentEntry.url);
+				}
 			} else {
 				LOGGER.info("Not active anymore (url {}).",url);
 			}
