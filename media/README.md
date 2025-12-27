@@ -154,5 +154,18 @@ urls:
 it's possible to select "WDR 2" using ``tuner://wdr2``.
 </ul>
 
+##### DLNA player
+
+``not.alexa.hermes.media.players.DlnaPlayer`` is a player accessing DLNA media content. Only (required) attribute is ``name`` representing
+the name of the player. The player accepts URL's of the form ``dlna://<control-uri>/<content-id>`` which can be provided either hardcoded
+or using a third party tool. Note, that
+
+* the ``<control-uri>`` part can be deduced from the UPnP descriptor of the media server and
+* the ``<content-id>`` is server specific, but ``0`` is always recognized as the root container.
+
+Additional information can be found in [the documentation of the class](/src/main/java/not/alexa/hermes/media/players/DlnaPlayer.java)
+
+
+
 
   
