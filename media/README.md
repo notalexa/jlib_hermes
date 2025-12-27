@@ -163,7 +163,7 @@ or using a third party tool. Note, that
 * the ``<control-uri>`` part can be deduced from the UPnP descriptor of the media server and
 * the ``<content-id>`` is server specific, but ``0`` is always recognized as the root container.
 
-Additional information can be found in [the documentation of the class](/src/main/java/not/alexa/hermes/media/players/DlnaPlayer.java)
+Additional information can be found in [the documentation of the class](/media/src/main/java/not/alexa/hermes/media/players/DlnaPlayer.java)
 
 
 
