@@ -69,15 +69,10 @@ public class PlaybackStream implements Closeable, StreamEntry.Listener, AudioStr
 
     private StreamEntry add(PlaybackTrack playable) {
     	StreamEntry newEntry=new StreamEntry(player,playable,this);
-    	if(head==null) {
-    		head=newEntry;
-    	} else {
-	    	StreamEntry rover=head;
-	    	while(rover.next!=null) {
-	    		rover=rover.next;
-	    	}
-	    	rover.next=newEntry;
-    	}
+    	newEntry.next=head;
+    	// This is the only strong reference if not playing.
+    	// Setting head to null makes all (possibly initialized) entries unavailable
+    	head=newEntry;
     	return newEntry;
     }
 
@@ -112,7 +107,9 @@ public class PlaybackStream implements Closeable, StreamEntry.Listener, AudioStr
 
     @Override
     public void playbackEnded(StreamEntry entry,int time) {
-    	if(entry==currentTrack) {
+    	if(entry==currentTrack||currentTrack==null) {
+    		LOGGER.info("{} ended.",entry.spec);
+    		// Because of potentially undelivered chunks we do not set currentTrack to null at this point.
 	        listener.playbackFinished(entry.playbackId, time);
 	        if(!entry.disableNextTrack) {
 	        	advance();
@@ -156,16 +153,24 @@ public class PlaybackStream implements Closeable, StreamEntry.Listener, AudioStr
     @Override
     public void ready(StreamEntry entry,int pos) {
     	synchronized (entry) {
-	    	LOGGER.info("{} ready.", entry);
-	    	head=entry;
-	    	if(entry!=currentTrack&&listener.ready(entry.playbackId, entry.spec,pos)) {
-	    		if(currentTrack!=null&&currentTrack!=fadeoutTrack) {
-	    			currentTrack.close();
-	    		}
-		    	this.currentTrack=entry;
-		    	controls.onAudioFormatChanged(entry.getFormat());
-		    	controls.onStateChanged();
-	    	}
+    		if(entry==currentTrack) {
+    			LOGGER.warn("Track {} requested input twice.",entry.spec);
+    		} else {
+		    	LOGGER.info("{} ready.", entry.spec);
+		    	// Remove explicit references of preloaded tracks
+		    	head=null;
+//		    	head=entry;
+		    	if(listener.ready(entry.playbackId, entry.spec,pos)) {
+		    		if(currentTrack!=null&&currentTrack!=fadeoutTrack) {
+		    			currentTrack.close();
+		    		}
+		    		synchronized (controls.getStreamLock()) {
+				    	currentTrack=entry;
+				    	controls.onAudioFormatChanged(entry.getFormat());
+				    	controls.onStateChanged();
+					}
+		    	}
+    		}
     	}
     }
 
@@ -183,7 +188,7 @@ public class PlaybackStream implements Closeable, StreamEntry.Listener, AudioStr
 
     @Override
 	public boolean seekTo(float time) {
-		return seekCurrent((int)time*1000);
+		return seekCurrent((int)(time*1000));
 	}
 
 	@Override
@@ -191,30 +196,35 @@ public class PlaybackStream implements Closeable, StreamEntry.Listener, AudioStr
 		return currentTrack==null?(fadeoutTrack==null?null:fadeoutTrack.getCurrentInfo()):currentTrack.getCurrentInfo();
 	}
 
+    private synchronized String playInternal(StreamEntry playable) {
+        int pos=playable.spec.startPos();
+        playable.startPlaying(pos);
+        LOGGER.debug("{} has been added to the stream (pos: {}).", playable, pos);
+        return playable.playbackId;
+    }
+
+
     private synchronized String playInternal(PlaybackTrack playable) {
     	if(currentTrack!=null) {
     		currentTrack.disableNextTrack();
     	}
         fadeoutTrack=currentTrack;
-        StreamEntry next=head==null?null:head.next;
-        while(true) {
-        	if(next==null) {
-        		LOGGER.info("Start "+playable+" with queue.start");
-        		next=add(playable);
-        		break;
-        	} else if(next.spec.getId().equals(playable.getId())) {
-        		break;
-        	} else {
-        		next=next.next;
-        	}
-        }
+        StreamEntry next=head;
+		while(true) {
+			if(next==null) {
+		    	LOGGER.info("Start "+playable+" with queue.start");
+		        next=add(playable);
+		        break;
+		    } else if(next.spec.getId().equals(playable.getId())) {
+		    	break;
+		    } else {
+		    	next=next.next;
+		    }
+		}
         if(fadeoutTrack!=null) {
         	fadeoutTrack=null;
         }
-        int pos=playable.startPos();
-        next.startPlaying(pos);
-        LOGGER.debug("{} has been added to the output. {pos: {}}", next, pos);
-        return next.playbackId;
+        return playInternal(next);
     }
 
     /**
@@ -269,11 +279,8 @@ public class PlaybackStream implements Closeable, StreamEntry.Listener, AudioStr
 		}
 		int n=currentTrack==null?0:currentTrack.next();
 		if(n>0x10000) {
-			StreamEntry current=currentTrack;
-			playbackEnded(current,0);
 			currentTrack=null;
-			advance();
-			return next();
+			return 0;
 		}
 		return n;
 	}

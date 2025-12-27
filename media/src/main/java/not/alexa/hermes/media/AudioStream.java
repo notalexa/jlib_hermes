@@ -322,6 +322,29 @@ public interface AudioStream extends AutoCloseable, LineListener {
 			}
 		}
 
+		public AudioInfo forTitle(String title) {
+			return forMetaData(title, null);
+		}
+
+		public AudioInfo forArtist(String artist) {
+			return forMetaData(null, artist);
+		}
+
+		public AudioInfo forMetaData(String title,String artist) {
+			try {
+				AudioInfo info=(AudioInfo)super.clone();
+				if(title!=null) {
+					info.title=title;
+				}
+				if(artist!=null) {
+					info.artist=artist;
+				}
+				return info;
+			} catch(Throwable t) {
+				return this;
+			}
+		}
+
 		/**
 		 * 
 		 * @return the artist

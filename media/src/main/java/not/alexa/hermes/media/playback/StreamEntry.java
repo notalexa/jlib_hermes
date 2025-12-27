@@ -101,7 +101,7 @@ class StreamEntry {
     		}
     	} catch(Throwable t) {
     		listener.playbackEnded(this,0);
-    		return 0;
+    		return Integer.MAX_VALUE;
     	}
     	if(currentChunk.endMarker) {
     		return Integer.MAX_VALUE;
@@ -113,10 +113,6 @@ class StreamEntry {
     			decoderQueue.offer(chunk);
     			return next();
     		}
-			if(Math.abs(n)>32768) {
-				System.out.println("Illegal");
-			}
-
     		return n;
     	}
     }
@@ -333,9 +329,6 @@ class StreamEntry {
 								}
 							} else {
 								chunk.buffer[chunk.len++]=a;
-								if(Math.abs(a)>32768) {
-									System.out.println("Illegal");
-								}
 							}
 						}
 						samplesDelivered+=n/format.getChannels();
@@ -364,7 +357,7 @@ class StreamEntry {
 	    
 	    @Override
 	    public synchronized void run() {
-	    	LOGGER.info("Load {} in {} with id {}",spec.getId(),entry,entry.playbackId);
+	    	LOGGER.info("Load {} in {} with id {}",spec,entry,entry.playbackId);
 	        for(int i=0;i<2;i++) try {
 	            entry.load();
 	            break;
@@ -390,8 +383,8 @@ class StreamEntry {
 	        LOGGER.info("{} terminated with {} chunks written.", playbackId,chunks);
 	        StreamEntry entry=ref.get();
 	        if(entry!=null) {
-	        	entry.audioQueue.offer(new AudioChunk(true));
 	        	entry.listener.playbackEnded(entry,0);
+	        	entry.audioQueue.offer(new AudioChunk(true));
 	        	entry.state=4;
 	        	entry.loadingSemaphore.release();
 	        }

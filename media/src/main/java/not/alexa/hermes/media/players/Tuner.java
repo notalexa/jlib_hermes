@@ -193,6 +193,7 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 		}
 	}
 	
+	@Override
 	protected AudioInfo getStateInfo() {
 		return currentEntry==null?null:currentEntry.resolveOverview();
 	}
