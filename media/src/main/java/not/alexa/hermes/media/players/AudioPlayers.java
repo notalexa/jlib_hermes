@@ -148,6 +148,15 @@ public class AudioPlayers extends AbstractPlayer<Void> {
 	}
 
 	@Override
+	public boolean cacheAlbum() {
+		if(currentPlayer!=null) {
+			return currentPlayer.cacheAlbum();
+		} else {
+			return false;
+		}
+	}
+
+	@Override
 	public void setAudioControls(AudioControls controls) {
 		this.controls=controls;
 	}

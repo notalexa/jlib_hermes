@@ -51,6 +51,14 @@ public class PlayHistory<T> {
 			return history.get(0);
 		}
 	}
+
+	public T remove() {
+		if(history.isEmpty()) {
+			return null;
+		} else {
+			return history.remove(0);
+		}
+	}
 	
 	/**
 	 * Retrieves the last element after the current element in the list and removes both from history

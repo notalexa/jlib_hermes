@@ -22,10 +22,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import not.alexa.hermes.media.playback.Album;
+import not.alexa.netobjects.coding.ByteEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,7 @@ public class CacheManager implements PlaybackTrackFacade {
 	private long limit;
 	private CacheMap metadataMap=new CacheMap();
 	private boolean unusable;
+	private Thread downloadThread;
 	
 	/**
 	 * Creates a cache manager at the given location with a limit of 20Mb.
@@ -107,6 +109,60 @@ public class CacheManager implements PlaybackTrackFacade {
 				LOGGER.warn("Caching is disabled (location={}).",this.cacheDir.getAbsolutePath());
 			}
 		}
+	}
+
+	public boolean isAlbumCachingSupported() {
+		return false;
+	}
+
+	protected Album getCurrentAlbum() {
+		return null;
+	}
+
+	public synchronized boolean cacheAlbum() {
+		if(downloadThread!=null||!isAlbumCachingSupported()) {
+			LOGGER.info("Download already running. Exiting....");
+			return false;
+		}
+		Album album=getCurrentAlbum();
+		List<? extends PlaybackTrack> items=(album==null?Collections.<PlaybackTrack>emptyList():album.getAlbumTracks()).stream().filter(track -> {
+			String id=track.getId()+".meta";
+			return metadataMap.get(id)==null;
+		}).collect(Collectors.toList());
+		LOGGER.info("Download list of size #{}",items.size());
+		if(!items.isEmpty()) {
+			downloadThread=new Thread("album-cacher") {
+				public void run() {
+					byte[] buffer=new byte[8192];
+					for(PlaybackTrack track:items) try {
+						LOGGER.info("Download track #{}",track.getId());
+						try (AudioStream stream = load(track, null)) {
+							int n;
+							while((n=stream.update(true, 100, 100, buffer, 0, buffer.length))>=0) {
+								if(n==0) {
+									System.out.println("N=0");
+								}
+							};
+						}
+						Thread.sleep(1000);
+					} catch(InterruptedException e) {
+					} catch (IOException e) {
+						LOGGER.warn("Caching track {} failed.",track.getId(),e);
+					}
+					downloadThread=null;
+				}
+			};
+			downloadThread.setDaemon(true);
+			downloadThread.start();
+		}
+		if(album.getId()!=null) try(OutputStream out=new FileOutputStream(new File(cacheDir,album.getId()+".album"));
+									ByteEncoder encoder=JsonCodingScheme.DEFAULT_SCHEME.createEncoder(context)) {
+			out.write(encoder.encode(album).asBytes());
+		} catch(BaseException|IOException e) {
+			LOGGER.warn("Unable to create album infos for {}",album.getName(),e);
+		}
+		return true;
+
 	}
 	
 	@Override
@@ -296,7 +352,9 @@ public class CacheManager implements PlaybackTrackFacade {
 
 		@Override
 		public void downloadFailed(Throwable cause) {
-			delegate.downloadFailed(cause);
+			if(delegate!=null) {
+				delegate.downloadFailed(cause);
+			}
 		}
 	}
 	

@@ -295,6 +295,7 @@ class StreamEntry {
 	        entry=null;
 	        AtomicInteger chunks=new AtomicInteger();
 	        boolean closed=false;
+			int blockCount=0;
 	        try {
 				while(!latch.await(500,TimeUnit.MILLISECONDS)) {
 					if(ref.get()==null) {
@@ -312,9 +313,15 @@ class StreamEntry {
 		        	} else try {
 						AudioChunk chunk=decoderQueue.poll(100, TimeUnit.MILLISECONDS);
 						if(chunk!=null) {
-							chunks.incrementAndGet();
-							chunk.len=chunk.offset=0;
+							//chunks.incrementAndGet();
+							chunk.len=chunk.offset=blockCount=0;
 						} else {
+							blockCount++;
+							if(blockCount>600) {
+								// 600*100ms=60000ms=1min The decoderqueue seems to be stuck.
+								LOGGER.warn("DecoderQueue is empty for 1min. Close input");
+								closed=true;
+							}
 							// Blocked
 							continue;
 						}

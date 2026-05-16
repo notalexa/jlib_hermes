@@ -188,4 +188,11 @@ public interface AudioPlayer extends AudioStream {
 	 */
 	public default void requestAudioFocus(String uri) {
 	}
+
+	/**
+	 * Cache the currently playing album if possible.
+	 *
+	 * @return {@code true} if caching is possible
+	 */
+	public boolean cacheAlbum();
 }

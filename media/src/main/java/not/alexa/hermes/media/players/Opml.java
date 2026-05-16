@@ -55,6 +55,10 @@ class Opml {
 		return body==null?defaultArtist:body.getArtist(defaultArtist);
 	}
 
+	public String getAlbum(String defaultAlbum) {
+		return body==null?defaultAlbum:body.getArtist(defaultAlbum);
+	}
+
 	public static class Outline {
 		@JsonProperty("@text") String text;
 		@JsonProperty Station station;
@@ -77,6 +81,7 @@ class Opml {
 	public static class Station {
 		@JsonProperty String current_song;
 		@JsonProperty String current_artist;
+		@JsonProperty String current_album;
 		protected Station() {}
 
 		public String getTitle(String defaultTitle) {
@@ -85,6 +90,10 @@ class Opml {
 
 		public String getArtist(String defaultArtist) {
 			return current_artist==null?defaultArtist:current_artist;
+		}
+
+		public String getAlbum(String defaultAlbum) {
+			return current_album==null?defaultAlbum:current_album;
 		}
 	}
 	
@@ -106,10 +115,10 @@ class Opml {
 	}
 
 	public not.alexa.hermes.media.AudioStream.AudioInfo getAudioInfo() {
-		return new AudioInfo(getArtist(null),getTitle(null),-1);
+		return new AudioInfo(getArtist(null),getAlbum(null), getTitle(null),-1);
 	}
 
 	public not.alexa.hermes.media.AudioStream.AudioInfo getOverview() {
-		return new AudioInfo(null,getStation(null),-1);
+		return new AudioInfo(null,null,getStation(null),-1);
 	}
 }

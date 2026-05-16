@@ -30,14 +30,14 @@ import not.alexa.hermes.media.playback.Callback;
 public class ChunkedInputStream extends SeekableInputStream {
 	private final long size;
 	private long pos;
-	private int chunkSize;
+	private final int chunkSize;
 	private int chunk;
 	private int offset;
-	private byte[][] chunks;
+	private final byte[][] chunks;
 	private int chunksLoaded;
-	private Object waitLock=new Object();
-	private int timeout;
-	private ChunkProvider chunkProvider;
+	private final Object waitLock=new Object();
+	private final int timeout;
+	private final ChunkProvider chunkProvider;
 	private IOException loaderException;
 	private boolean exceptionThrown;
 	
@@ -150,8 +150,8 @@ public class ChunkedInputStream extends SeekableInputStream {
 			pos=size;
 		} else if(chunks[c]==null){
 			chunks[c]=buffer;
-			chunksLoaded++;
 			synchronized (waitLock) {
+				chunksLoaded++;
 				waitLock.notifyAll();
 			}
 			if(chunksLoaded==chunks.length) {

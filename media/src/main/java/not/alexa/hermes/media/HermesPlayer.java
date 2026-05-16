@@ -63,6 +63,8 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 	@JsonProperty(defaultValue = "Weiß nicht") String noInfo="Weiß nicht";
 	@JsonProperty(defaultValue = "Du hörst gerade {0}") String shortInfo="Du hörst gerade {0}";
 	@JsonProperty(defaultValue = "Du hörst gerade {1} von {0}") String longInfo="Du hörst gerade {1} von {0}";
+	@JsonProperty String albumNotCachableInfo;
+	@JsonProperty String nothingPlayable;
 	@JsonProperty(defaultValue="false") boolean publishState;
 	@JsonProperty(required = true) AudioPlayer player;
 	@JsonProperty(defaultValue="0.5f") float initialVolume=0.5f;
@@ -112,10 +114,20 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 					if(source!=null) {
 						if(player.play(source.getValue())) {
 							controls.resume();
+						} else try {
+							LOGGER.info("No music playable");
+							if(nothingPlayable!=null) {
+								//api.publish(new Say(api.getSiteId(),"Ich hab noch keine Musik in der Rille"));
+								intent.reply(api, nothingPlayable);
+							}
+						} catch(Throwable t) {
 						}
 					} else if(!player.hasAudio()) try {
 						LOGGER.info("No music playable");
-						api.publish(new Say("Ich hab keine Musik in der Rille"));
+						if(nothingPlayable!=null) {
+							//api.publish(new Say(api.getSiteId(),"Ich hab noch keine Musik in der Rille"));
+							intent.reply(api, nothingPlayable);
+						}
 					} catch(Throwable t) {
 					} else {
 						controls.resume();
@@ -261,16 +273,22 @@ public class HermesPlayer implements IntentHandler, HermesComponent, Listener {
 					}
 				}));
 			} else if("state".equals(cmd)) {
-				executor.execute(Commands.State.decorate(()->{
+				executor.execute(Commands.State.decorate(() -> {
 					try {
-						PlayerState state=player.getState();
-						if(state!=null) {
+						PlayerState state = player.getState();
+						if (state != null) {
 							new StateMessage(api.getSiteId(), player.getState()).publish(api);
 						}
-					} catch(Throwable t) {
-						LOGGER.error("Failed to publish state",t);
+					} catch (Throwable t) {
+						LOGGER.error("Failed to publish state", t);
 					}
 				}));
+			} else if("cache".equals(cmd)) {
+				if(!player.cacheAlbum()&&albumNotCachableInfo!=null) try {
+					intent.reply(api,albumNotCachableInfo);
+				} catch (Throwable t) {
+					LOGGER.error("Failed to publish state", t);
+				}
 			} else {
 				return false;
 			}

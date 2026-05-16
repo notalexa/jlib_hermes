@@ -45,7 +45,7 @@ public class MP3AudioStream implements AudioStream {
     protected final long size;
 
     public MP3AudioStream(InputStream audioIn, String title,float normalizationFactor, long size) throws IOException {
-    	this(audioIn,new AudioInfo(null,title,-1),normalizationFactor,size);
+    	this(audioIn,new AudioInfo(null,null,title,-1),normalizationFactor,size);
     }
     
     public MP3AudioStream(InputStream audioIn, AudioInfo info,float normalizationFactor, long size) throws IOException {
@@ -118,10 +118,12 @@ public class MP3AudioStream implements AudioStream {
 		@Override
 		protected void handleTag(String tag, byte[] data, int size) throws IOException {
 	        if("TIT2".equals(tag)) {
-	        	info=new AudioInfo(info.getArtist(),id3String(data,size),info.getDuration());
+	        	info=info.forTitle(id3String(data,size));
 	        } else if("TPE1".equals(tag)) {
-	        	info=new AudioInfo(id3String(data,size),info.getTitle(),info.getDuration());
-	        }
+	        	info=info.forArtist(id3String(data,size));
+	        } else if("TALB".equals(tag)) {
+				info=info.forAlbum(id3String(data,size));
+			}
 		}
     }
     
@@ -154,7 +156,7 @@ public class MP3AudioStream implements AudioStream {
          *
          * @param in the MP3 stream
          * @param normalisationPregain the normalization pregain applied to the raw PCM
-         * @param the size of the file or <code>-1</code> if not known
+         * @param size the size of the file or <code>-1</code> if not known
          */
         MP3InputStream(InputStream in, float normalisationPregain,long size) throws BitstreamException {
             this.in = in;

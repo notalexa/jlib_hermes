@@ -78,7 +78,7 @@ import not.alexa.netobjects.types.DefaultTypeLoader;
  */
 public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPlayer {
 	private final Logger LOGGER=LoggerFactory.getLogger(Tuner.class);
-	private final AudioInfo DEFAULT_INFO=new AudioInfo(null,"Tuner",-1);
+	private final AudioInfo DEFAULT_INFO=new AudioInfo(null,null,"Tuner",-1);
 	private static CodingScheme SCHEME=XMLCodingScheme.DEFAULT_SCHEME.newBuilder().setRootTag("opml").setRootType(Opml.class).build();
 	
 	@JsonProperty(defaultValue = "tuner://silence") protected String errorURL;
@@ -143,7 +143,7 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 	}
 	protected StreamEntry resolveUrl(String uri,boolean resolveTunerUrls) {
 		if("player:tuner".equals(uri)) {
-			return currentEntry==null?null:new StreamEntry(currentEntry.url);
+			return currentEntry==null?null:currentEntry.copy();
 		}
 		if(uri.startsWith("tunein://")) {
 			return new TuneInEntry(uri);
@@ -232,6 +232,10 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 				}
 			}
 			LOGGER.info("URL {} resolved to ({},{})",url,this.url,profile);
+		}
+
+		protected StreamEntry copy() {
+			return new StreamEntry(url);
 		}
 		
 		public void reopen(Throwable cause) {
@@ -381,7 +385,11 @@ public class Tuner extends AbstractPlayer<Tuner.StreamEntry> implements AudioPla
 			}
 			this.id=id;
 		}
-		
+
+		protected StreamEntry copy() {
+			return new TuneInEntry(id);
+		}
+
 		@Override
 		public AudioInfo resolveAudioInfo() {
 			if(info==null||System.currentTimeMillis()-15000>infoTime) {

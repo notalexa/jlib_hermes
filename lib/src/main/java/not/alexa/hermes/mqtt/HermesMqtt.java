@@ -16,6 +16,10 @@
 package not.alexa.hermes.mqtt;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -42,7 +46,15 @@ import not.alexa.netobjects.Context;
 public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 	private static Logger LOGGER=LoggerFactory.getLogger(HermesMqtt.class);
 	private IMqttClient client;
-	
+	private final ExecutorService executorService= Executors.newCachedThreadPool(new ThreadFactory() {
+		final AtomicInteger count=new AtomicInteger(1);
+		@Override
+		public Thread newThread(Runnable runnable) {
+			return new Thread(runnable, "mqtt-worker-"+count.getAndIncrement());
+		}
+	});
+
+
 	public HermesMqtt(Context context,HermesComponent...components) {
 		super(context,components);
 	}
@@ -116,10 +128,12 @@ public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-		try {
-			received(topic,message.getPayload());
-		} catch(Throwable t) {
-		}
+		executorService.execute(() -> {
+			try {
+				received(topic,message.getPayload());
+			} catch(Throwable t) {
+			}
+		});
 	}
 
 	@Override
@@ -139,7 +153,9 @@ public class HermesMqtt extends HermesApi implements IMqttMessageListener {
 			return new IMqttMessageListener() {
 				@Override
 				public void messageArrived(String topic, MqttMessage message) throws Exception {
-					subscriber.received(HermesMqtt.this, topic, message.getPayload());
+					executorService.execute(() -> {
+						subscriber.received(HermesMqtt.this, topic, message.getPayload());
+					});
 				}
 			};
 		}

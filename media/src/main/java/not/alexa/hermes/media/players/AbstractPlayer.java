@@ -86,6 +86,11 @@ public abstract class AbstractPlayer<T> implements AudioPlayer {
 		}
 	}
 
+	@Override
+	public boolean cacheAlbum() {
+		return false;
+	}
+
 	public AudioFormat getStreamFormat() {
 		synchronized(controls.getStreamLock()) {
 			return currentStream.getFormat();

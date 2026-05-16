@@ -22,6 +22,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import not.alexa.hermes.mqtt.HermesMqtt;
 import not.alexa.hermes.mqtt.HermesServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple class for outputing mqtt content.
@@ -35,7 +37,8 @@ import not.alexa.hermes.mqtt.HermesServer;
  * 
  */
 public class MqttLog {
-	private String url;
+	private static final Logger LOGGER= LoggerFactory.getLogger(MqttLog.class);
+	private final String url;
 	public MqttLog(String url) {
 		this.url=url;
 	}
@@ -46,9 +49,9 @@ public class MqttLog {
 			@Override
 			public void messageArrived(String topic, MqttMessage message) throws Exception {
 				if(!topic.contains("audioServer")) {
-					System.out.println(topic+"\n"+new String(message.getPayload()));
+                    LOGGER.info("{}\nPayload: {}", topic, new String(message.getPayload()));
 				} else {
-					System.out.println(topic);
+					LOGGER.info(topic);
 				}
 			}
 			
@@ -58,12 +61,12 @@ public class MqttLog {
 			
 			@Override
 			public void connectionLost(Throwable cause) {
-				System.out.println("Connection lost: "+cause.getMessage());
+                LOGGER.warn("Connection lost: {}", cause.getMessage());
 			}
 			
 			@Override
 			public void connectComplete(boolean reconnect, String serverURI) {
-				System.out.println("Connection completed: "+reconnect+", "+serverURI);
+                LOGGER.info("Connection completed: {}, {}", reconnect, serverURI);
 			}
 		});
 		client.connect(HermesServer.createConnectOptions(true));

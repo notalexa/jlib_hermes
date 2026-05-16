@@ -265,6 +265,7 @@ public interface AudioStream extends AutoCloseable, LineListener {
 	 */
 	public class AudioInfo implements Cloneable {
 		@JsonProperty private String artist;
+		@JsonProperty private String album;
 		@JsonProperty private String title;
 		@JsonProperty private float position;
 		@JsonProperty private float duration;
@@ -274,12 +275,13 @@ public interface AudioStream extends AutoCloseable, LineListener {
 		protected AudioInfo() {
 		}
 
-		public AudioInfo(String artist,String title,float duration) {
-			this(artist,title,duration,0,1);
+		public AudioInfo(String artist,String album, String title,float duration) {
+			this(artist,album, title,duration,0,1);
 		}
 
-		public AudioInfo(String artist,String title,float duration,float gain,float peak) {
+		public AudioInfo(String artist,String album, String title,float duration,float gain,float peak) {
 			this.artist=artist;
+			this.album=album;
 			this.title=title;
 			this.duration=duration;
 			this.gain=gain;
@@ -323,18 +325,25 @@ public interface AudioStream extends AutoCloseable, LineListener {
 		}
 
 		public AudioInfo forTitle(String title) {
-			return forMetaData(title, null);
+			return forMetaData(title, null, null);
 		}
 
 		public AudioInfo forArtist(String artist) {
-			return forMetaData(null, artist);
+			return forMetaData(null, null, artist);
 		}
 
-		public AudioInfo forMetaData(String title,String artist) {
+		public AudioInfo forAlbum(String album) {
+			return forMetaData(null, album, null);
+		}
+
+		public AudioInfo forMetaData(String title,String album, String artist) {
 			try {
 				AudioInfo info=(AudioInfo)super.clone();
 				if(title!=null) {
 					info.title=title;
+				}
+				if(album!=null) {
+					info.album=album;
 				}
 				if(artist!=null) {
 					info.artist=artist;
@@ -359,6 +368,14 @@ public interface AudioStream extends AutoCloseable, LineListener {
 		 */
 		public String getTitle() {
 			return title;
+		}
+
+		/**
+		 *
+		 * @return the album
+		 */
+		public String getAlbum() {
+			return album;
 		}
 
 		/**
